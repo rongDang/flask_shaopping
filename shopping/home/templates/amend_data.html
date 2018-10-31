@@ -1,0 +1,205 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>修改资料</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static", filename="css/top.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static", filename="css/vipcenter.css") }}">
+    <script src="{{ url_for("home.static", filename="js/jquery-1.8.3.min.js") }}"></script>
+    <script src="{{ url_for("home.static", filename="js/city.js/cityJson.js") }}"></script>
+    <script src="{{ url_for("home.static", filename="js/city.js/citySet.js") }}"></script>
+    <script src="{{ url_for("home.static", filename="js/city.js/Popt.js") }}"></script>
+</head>
+<body>
+<div>
+    <!--顶部菜单有改动与首页的不一样，请单独调用-->
+    <div class="dy1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <div class="dy2">
+            <ul class="dy3">
+                <li><a href="#" onclick="location.href='index'">小白首页<br/>小白首页</a></li>
+                <li><a href="#" id="diyunapp">商城APP<br/>商城APP</a></li>
+            </ul>
+            <ul class="dy4">
+                {% if data.name %}
+                    <li><a href="vipcenter">{{ data.nick_name }}<br/>{{ data.nick_name }}</a></li>
+                    <li><a href="#" onclick="location.href='logout'" id="username">退出登录<br/>退出登录</a></li>
+                {% else %}
+                    <li><a href="/register/login">登录<br/>登录</a></li>
+                    <li><a href="/register/sign">注册<br/>注册</a></li>
+                {% endif %}
+            </ul>
+            <div class="dy9">
+                <img src="{{ url_for("home.static",filename="img/phone.png") }}"/>
+            </div>
+        </div>
+    </div>
+    <!--个人中心首页 -->
+    <div class="thetoubu">
+        <!--头部-->
+        <div class="thetoubu1">
+            <b><img src="{{ data.head_img }}"/></b>
+            <em>{{ data.nick_name }}</em>
+            <em style="color: #ff9352">欢迎来到会员中心</em>
+            <a href="#">修改资料</a>
+            <h5>账户安全</h5>
+            <strong>高</strong>
+            <span>
+            <p style=" width:80%"></p>
+        </span>
+            <a href="#" onclick="location.href='SAM'">安全等级提升</a>
+        </div>
+        <!--详细列表-->
+        <div class="xiangxilbnm">
+            <!--left-->
+            <div class="liefyu">
+                <h2>交易管理</h2>
+                <div class="conb">
+                    <a href="#" onclick="location.href='my_cart'">我的购物车</a>
+                    <a href="#" onclick="location.href='Goods_collection'">我的收藏</a>
+                    <a href="#">交易评价/晒单</a>
+                </div>
+                <h2>客户服务</h2>
+                <div class="conb">
+                    <a href="#">退款及退货</a>
+                    <a href="#">交易投诉</a>
+                    <a href="#">商品咨询</a>
+                </div>
+                <h2>资料管理</h2>
+                <div class="conb">
+                    <a href="#">账户信息</a>
+                    <a href="#" onclick="location.href='SAM'">账户安全</a>
+                </div>
+            </div>
+            <!--right-->
+            <div class="zuirifip">
+                <div class="basedexinxi">
+                    <a href="#">基本信息</a>
+                </div>
+                <!--修改基本信息开始-->
+                <div class="baseopxg">
+                    <div class="tirstbf">
+                        <em>头像：</em>
+                        <span>
+                            <img id="head" src="{{ data.head_img }}"/>
+                        </span>
+                        <!--这里用Ajax上传文件-->
+                        <div style="float:right;padding:135px;right:260px;position:relative">
+                            <form id="uploadForm" method="post" enctype="multipart/form-data">
+                                <input type="file" style="width: 150px" name="file">
+                                <input type="button" id="upFileBtn" style="width: 30px;height: 20px" value="上传">
+                            </form>
+                        </div>
+                    </div>
+                    <!--第二部分-->
+                    <div class="thetwobf">
+                        <em>真实姓名：</em>
+                        <input style="float:left; border:1px solid #bbb; box-shadow:none; height:28px; font-size:12px; text-indent:6px" id="real_name" type="text" value="{{ data.real_name }}" />
+                    </div>
+                    <div class="thetwobf">
+                        <em>性别：</em>
+                        <input type="radio" id="ma" name="sex" style=" float:left; display:block; width:13px; height:13px; margin-top:9px" value="男"><span>男</span>
+                        <input type="radio" id="nv" name="sex" style=" float:left; display:block; width:13px; height:13px; margin-top:9px" value="女"><span>女</span>
+                    </div>
+                    <div class="thetwobf">
+                        <em>出生日期：</em>
+                        <input style="float:left; border:1px solid #bbb; box-shadow:none; height:28px; font-size:12px; text-indent:6px; width:50px" id="year" maxlength="4" type="text" value="{{ data.birthday[0] }}"/><span>年</span>
+                        <input style="float:left; border:1px solid #bbb; box-shadow:none; height:28px; font-size:12px; text-indent:6px; width:50px" id="month" maxlength="2" type="text" value="{{ data.birthday[1] }}"/><span>月</span>
+                        <input style="float:left; border:1px solid #bbb; box-shadow:none; height:28px; font-size:12px; text-indent:6px; width:50px" id="day" maxlength="2" type="text" value="{{ data.birthday[2] }}"/><span>日</span>
+                    </div>
+                    <div class="thetwobf">
+                        <em>居住地址：</em>
+                        <span>{{ data.address }}</span>
+                        <input type="button" style="height: 25px;color: #00aaee;background: white" value="修改地址" onclick="location.href='aaa'">
+                        <span style="float: right">注:修改手机和邮箱请到&nbsp;&nbsp;&nbsp;<a href="SAM" style="background: none;color: #00aaee">账号安全</a></span>
+                    </div>
+                    <div class="thetwobf">
+                        <a href="#" id="up" style=" display:block; padding-left:20px; padding-right:20px; line-height:40px;float:left; font-size:14px; color:#FFF; margin-left:213px">提交</a>
+                    </div>
+                </div>
+            </div>
+            <!--right结束-->
+        </div>
+        <!--详细列表结束-->
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var csrftoken = $("meta[name=csrf-token]").attr("content");
+    $(".liefyu h2").click(function () {
+        $(this).next(".conb").slideToggle().siblings(".con").slideUp()
+    });
+    //判断日期格式是否正确
+    function IsDate() {
+        var flag = "";
+        var t1 = /^\d{4}/;var t2 = /^\d{1,2}/;
+        var year = $("#year").val();
+        var month = $("#month").val();
+        var day = $("#day").val();
+        if(t1.test(year)&&year<2019 && t2.test(month)&&month<=12 && t2.test(day)&&day<32){
+            flag = true
+        }else {
+            flag = false
+        }
+        return flag
+    }
+    $("#up").click(function () {
+        // 获取输入的姓名，生日，地址
+        var name = $("#real_name").val();
+        var sex = $('input[name="sex"]:checked').val();
+        var flag = IsDate();
+        if (name == "" || flag == false) {
+            alert("请输入正确信息");
+        } else {
+            var birthday = $("#year").val()+"-"+$("#month").val()+"-"+$("#day").val();
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "amend_data",
+                data:{real_name:name,birthday:birthday,sex:sex},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    location.href = "amend_data"
+                },
+                error: function () {
+                    alert("异常");
+                }
+            });
+        }
+    });
+    //Ajax的方式上传图片
+    $("#upFileBtn").click(function () {
+        //如果要用ajax上传文件，则要用FormData将文件转化为FormData对象。
+        var formData = new FormData($("#uploadForm")[0]);
+        $.ajax({
+            url: "/home/upload",
+            type: "POST",
+            data:formData,
+            cashe: false,
+            contentType:false,
+            processData:false,
+            headers: {"X-CSRFToken": csrftoken},
+            success:function (data) {
+                if(data=="0"){
+                    alert("请上传正确格式的图片")
+                }else{
+                    alert("头像上传成功");
+                    location.href="amend_data"
+                }
+            },error:function () {
+                alert("错误")
+            }
+        });
+    });
+    if("{{ data.sex }}"=="男"){
+        $("#ma").attr("checked","true")
+    }else {
+        $("#nv").attr("checked","true")
+    }
+</script>
+</html>        
+                
+                       
+             
+            

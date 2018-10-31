@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>注册</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for("register.static",filename='css/register-login.css') }}">
+</head>
+<body>
+<!--背景特效div-->
+<div id="box"></div>
+<div class="cent-box register-box">
+	<div class="cent-box-header">
+        <a href="#"><h1 class="main-title hide">小白商城</h1></a>
+	</div>
+	<div class="cont-main clearfix">
+		<div class="index-tab">
+			<div class="index-slide-nav">
+				<a href="{{ url_for("register.login") }}">登录</a>
+				<a href="{{ url_for("register.sign") }}" class="active">注册</a>
+				<div class="slide-bar slide-bar1"></div>				
+			</div>
+		</div>
+		<div class="login form">
+			<div class="group">
+                <meta name="csrf-token" content="{{ csrf_token() }}">
+                <div class="group-ipt user">
+                    <input type="text" name="user" id="user" class="ipt" placeholder="用户名(3~10位)" required>
+                </div>
+                <div class="group-ipt email">
+                    <input type="email" name="phone" id="phone" class="ipt" placeholder="电话号码" required>
+                </div>
+                <div class="group-ipt password">
+					<input type="password" name="password" id="password" class="ipt" placeholder="设置登录密码(6~12位)" required>
+				</div>
+				<div class="group-ipt password1">
+					<input type="password" name="password1" id="password1" class="ipt" placeholder="重复密码" required>
+				</div>
+                <!--这里的验证码为手机验证码，点击获取手机验证码-->
+				<div class="group-ipt verify">
+					<input type="text" name="verify" id="verify" class="ipt" placeholder="输入验证码" maxlength="6" required>
+                    <input type="button" id="btn" class="imgcode" value="获取验证码" />
+				</div>
+			</div>
+		</div>
+		<div class="button">
+			<button type="button" class="login-btn register-btn" id="button">注册</button>
+		</div>
+	</div>
+</div>
+<div class="footer">
+	<p>小白商城 - Thousands Find</p>
+	<p>Designed By xiaobai & <a href="#">baidu.com</a> 2018</p>
+</div>
+<script src='{{ url_for("register.static",filename="js/particles.js") }}' type="text/javascript"></script>
+<script src='{{ url_for("register.static",filename="js/background.js") }}' type="text/javascript"></script>
+<script src='{{ url_for("register.static",filename="js/jquery.min.js") }}' type="text/javascript"></script>
+<script src='{{ url_for("register.static",filename="js/layer/layer.js") }}' type="text/javascript"></script>
+<script type="text/javascript">
+    var user_Boolean = true;var phone_Boolean = true;var pwd_Boolean = true;var pwd1_Boolean = true;
+    var csrftoken =$("meta[name=csrf-token]").attr("content");
+    //判断账号的输入
+    $("#user").blur(function () {
+        if ($("#user").val().length<3){
+            layer.tips("用户名不能少于3位", '#user', {
+                time: 6000,
+                tips: [2, "#ff8b2f"],
+                tipsMore: true
+            });
+            user_Boolean = false
+        }else if($("#user").val().length>10){
+            layer.tips("用户名不能大于10位", '#user', {
+                time: 6000,
+                tips: [2, "#ff8b2f"],
+                tipsMore: true
+            });
+            user_Boolean = false
+        }else {
+            user_Boolean = true
+        }
+    });
+    //密码的输入
+    $("#password").blur(function () {
+        if ($("#password").val().length<6){
+            layer.tips("密码不能小于6位数", '#password', {
+                time: 6000,
+                tips: [2, "#ff8b2f"],
+                tipsMore: true
+            });
+            pwd_Boolean = false
+        }else if($("#password").val().length>12){
+            layer.tips("密码不能大于12位数", '#password', {
+                time: 6000,
+                tips: [2, "#ff8b2f"],
+                tipsMore: true
+            });
+            pwd_Boolean = false
+        }else {
+            pwd_Boolean = true
+        }
+    });
+    //判断重复密码是否和原来输入的相同
+    $("#password1").blur(function () {
+        if($("#password1").val()!=$("#password").val()){
+            layer.tips("重复密码输入错误！", '#password1', {
+                time: 6000,
+                tips: [2, "#ff8b2f"],
+                tipsMore: true
+            });
+            pwd1_Boolean = false
+        }else {
+            pwd1_Boolean = true
+        }
+    });
+    //鼠标移开用户名输入框则会先判断电话输入是否正确，然后再到后台进行查询是否存在用户，
+    $("#phone").blur(function () {
+        var name = $("#phone").val();
+        //判断用户输入的电话格式是否正确（移动，联通，电信），正确则会进入到Ajax
+        var CHINAMOBILE = /^1(3[4-9]|5[012789]|8[23478]|4[7]|7[8])\d{8}$/;//移动电话
+        var CHINAUNICOM =/^1(3[0-2]|5[56]|8[56]|4[5]|7[36])\d{8}$/;//联通电话，17388960753
+        var CHINATELECOM =/^1(3[3])|(8[019])\d{8}$/;//电信电话
+        if(CHINAMOBILE.test(name) || CHINAUNICOM.test(name) || CHINATELECOM.test(name)){
+            //这个Ajax进入的是电话的查找
+            $.ajax({
+                url: "/register/find_name",
+                type: "POST",
+                dataType: "json",
+                data: {"name": name},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    if (data == "1") {
+                        layer.tips("电话已经被注册！", '#phone', {
+                            time: 6000,
+                            tips: [2, "#ff8b2f"],
+                            tipsMore: true
+                        });
+                        phone_Boolean = false
+                    } else {
+                        phone_Boolean = true
+                    }
+                }, error: function () {
+                    alert("电话判断 没有获取返回的数据")
+                }
+            })
+        }else {
+            layer.tips("电话格式错误！", '#phone', {
+                time: 6000,
+                tips: [2, "#ff8b2f"],
+                tipsMore: true
+            });
+            phone_Boolean = false
+        }
+    });
+    //只有在前面所有的框内容输入正确点击注册才能有效
+    $("#button").click(function () {
+        var message = $("#verify").val();//获取用户输入的验证码
+        //会先Ajax判断验证码是否正确，正确才会注册用户
+        if (user_Boolean && phone_Boolean && pwd_Boolean && pwd1_Boolean){
+            var username=$("#user").val();var phone=$("#phone").val();var pwd=$("#password").val();
+            //这个Ajax为短信验证码的判断
+            $.ajax({
+                url:"/register/judge_message",
+                type: "POST",
+                dataType: "json",
+                data: {"message": message},
+                success:function (data) {
+                    if (data=="1"){
+                        $.ajax({
+                            url: "/register/sign",
+                            type: "POST",
+                            dataType: "json",
+                            data: {"username": username,"phone":phone,"pwd":pwd},
+                            headers: {"X-CSRFToken": csrftoken},
+                            success:function (data) {
+                                //注册成功后跳转到登录界面
+                                alert("注册成功，请登录");
+                                location.href="/register/login"
+                            },error:function () {
+                                alert("注册 没有获取返回的数据")
+                            }
+                        })
+                    }else {
+                        alert("验证码错误")
+                    }
+                },error:function () {
+                    alert("验证码 没有获取返回的数据")
+                }
+            })
+        }else {
+            alert("输入信息有错误！")
+        }
+    });
+	// jQuery(function(){}) 或$(function(){});是$(document).ready()方法的简写，短信的发送
+    $(function () {
+        //点击获取验证码会先获取电话是否正确
+        $('#btn').click(function () {
+            var phone = $("#phone").val();
+            if (phone!="" && phone_Boolean){
+                $.ajax({
+                    url:"/register/send_phone",
+                    type: "POST",
+                    dataType: "json",
+                    data: {"phone": phone},
+                    success:function () {
+                        alert("短信已发送！")
+                    },error:function () {
+                        alert("没有获取返回的数据")
+                    }
+                });
+                var count = 60;
+                //setInterval() 方法可按照指定的周期（以毫秒计）来调用函数,这里每隔1秒调用一次CountDown函数
+                var countdown = setInterval(CountDown, 1000);
+                function CountDown() {
+                    //disabled是规定应该禁用input属性，被禁用的input元素不可用
+                    $("#btn").attr("disabled", true);
+                    $("#btn").val(count + " 秒后再次获取!");
+                    if (count == 0) {
+                        //removeAttr()移除被选定元素的id
+                        $("#btn").val("重新获取验证码").removeAttr("disabled");
+                        clearInterval(countdown);
+                    }
+                    count--;
+                }
+            }else {
+                alert("电话不正确！")
+            }
+        })
+    });
+</script>
+</body>
+</html>

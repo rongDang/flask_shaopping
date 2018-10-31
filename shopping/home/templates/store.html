@@ -1,0 +1,274 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>进入店铺详情</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/top.css") }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/lunbo.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/dianpu.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/footer.css") }}">
+    <script src="{{ url_for("home.static",filename="js/jquery-1.8.3.min.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/public.js") }}"></script>
+</head>
+
+<body>
+<!--头部-->
+<div class="dy1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <div class="dy2">
+        <ul class="dy3">
+            <li><a href="index">小白首页<br/>小白首页</a></li>
+            <li><a href="#" id="diyunapp">商城APP<br/>商城APP</a></li>
+        </ul>
+        <ul class="dy4">
+            {% if data.name %}
+                <!--用户登录后显示用户名，点击用户名则会进入到用户中心-->
+                <li>
+                    <a href="#" onclick="location.href='vipcenter'" id="username">{{ data.nick_name }}<br/>{{ data.nick_name }}</a>
+                </li>
+                <li><a href="#" onclick="location.href='logout'" id="username">退出登录<br/>退出登录</a></li>
+            {% else %}
+                <li><a href="/register/login">登录<br/>登录</a></li>
+                <li><a href="/register/sign">注册<br/>注册</a></li>
+            {% endif %}
+        </ul>
+        <div class="dy9">
+            <img src="{{ url_for("home.static",filename="img/phone.png") }}"/>
+        </div>
+    </div>
+</div>
+<!--logo加时间加搜索框-->
+<div class="dy10">
+	<div class="dy11">
+    	<img src="{{ url_for("home.static",filename="img/logo2.png") }}"/>
+    </div>
+    <div class="dy13">
+    	<embed src="{{ url_for("home.static",filename="img/honehone_clock_wh.swf") }}" style=" height:45px; width:120px"></embed>
+    </div>
+    <div class="dy12">
+    	<input type="text" placeholder="搜索商品/店铺" id="shop_name" style="width:500px; height:36px; text-indent:12px; font-size:12px; color:#666; float:left">
+        <input type="button" onclick="sou()" value="搜索" style=" cursor:pointer; width:70px; height:36px; float:right; text-align:center; background:#333;" class="shousuo">
+    </div>
+</div>
+<!--正式开始-->
+<div class="dianpugo">
+	<img src="{{ url_for("home.static",filename="img/05206189042594699.jpg") }}" style=" position:absolute; top:0; left:0">
+    <div class="dianpuqu">
+        <!--显示店铺的名字-->
+    	<a href="#">{{ data.store_name }}<br/>{{ data.store_name }}</a>
+        <a href="#" title="您需要添加对方好友">在线客服<br/>在线客服</a>
+        {% if data.result1 %}
+            <a href="#" onclick="del_store()">已收藏<br/>已收藏</a>
+        {% else %}
+            <a href="#" onclick="add_store()">收藏店铺<br/>收藏店铺</a>
+        {% endif %}
+        <span id="dfly">4.1
+        	<p>
+            	<em style=" width:80%; background:url({{ url_for("home.static",filename="img/2014grate.png") }}) no-repeat 0 -5px"></em>
+            </p>
+        </span>
+    </div>
+	<!--得分来源-->
+    <div class="defenlaiyuan" style=" background:rgba(255,255,255,0.8) url({{ url_for("home.static",filename="img/tmao.png") }}) no-repeat bottom center">
+        <span style=" display:block; width:100%; line-height:40px; padding-left:20px; font-size:14px; color:#111">店铺动态评分</span>
+        <span style=" display:block; width:100%; line-height:40px; padding-left:20px; font-size:14px; color:#999">描述相符：<s style="color:#111">4.1</s>分</span>
+        <span style=" display:block; width:100%; line-height:40px; padding-left:20px; font-size:14px; color:#999">服务态度：<s style="color:#111">4.1</s>分</span>
+        <span style=" display:block; width:100%; line-height:40px; padding-left:20px; font-size:14px; color:#111">公司所在地：<s>济南</s></span>
+        <span style=" display:block; width:100%; line-height:40px; padding-left:20px; font-size:14px; color:#111">公司名称：<s>小白科技</s></span>
+    </div>
+</div>
+
+<!--下面-->
+<div class="caomeiwei">
+	<h5>全部商品</h5>
+    <!--商品分类-->
+    <div class="juziwei">
+        <a href="#" title="销售价格降序排列" onclick="price()">价格<br/>价格</a>
+        <a href="#" title="七日内销量降序排列" onclick="sales()">销量<br/>销量</a>
+        <a href="#" title="收藏人气降序排列" onclick="collect()">收藏<br/>收藏</a>
+        <input type="button" value="搜索" onclick="search()"  style=" width:50px; height:22px; border:1px solid #d93600; font-size:12px; float:right; margin-top:6px; margin-right:10px; margin-left:2px; color:#fff; background:#d93600">
+        <input id="shop" type="text" placeholder="搜索店内的商品" style=" width:120px; height:20px; border:1px solid #bbb; font-size:12px; margin-top:6px; color:#666; text-indent:6px; float:right" value="{{ data.shop_name }}">
+    </div>
+    <!--所有分类-->
+    <div class="yansuan">
+    	<ul id="test">
+            {% for foo in data.result %}
+                <li>
+                    <a href="#" onclick="location.href='details?id='+'{{ foo.1 }}'">
+                        <img src="{{ foo.7 }}"/>
+                    </a>
+                    <a href="#"><i>{{ foo.3 }}</i></a>
+                    <span>￥<s style="color:#F60">{{ foo.4 }}</s></span>
+                    <p>已售:<s style="color:#111">{{ foo.10 }}</s>件</p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var store = "{{ data.store_name }}";
+    var csrftoken = $("meta[name=csrf-token]").attr("content");
+    //得分来源jQuery
+    $(function () {
+        $("#dfly").mouseenter(function () {
+            $(".defenlaiyuan").stop().animate({left: 10}, 500)
+        });
+        $("#dfly").mouseleave(function () {
+            $(".defenlaiyuan").stop().animate({left: -220}, 500)
+        })
+    });
+    var jude = true;
+    //点第一次价格降序，第二次价格升序,为true为降序，false为升序
+    function price() {
+        if(jude){jude = false; }else {jude = true;}
+        $.ajax({
+            url: "price",
+            type: "post",
+            dataType: "json",
+            data: {jude: jude, store: store},
+            headers: {"X-CSRFToken": csrftoken},
+            success: function (data) {
+                //删除原来的数据，显示查询后的结果
+                $("#test").empty();
+                //获取查询的数据替换店铺内原来的商品，实现查询的结果
+                for (i = 0; i < data.length; i++) {
+                    $("<li><a href='/home/details?id=" + data[i][1] + "'>" +
+                        "<img src=" + data[i][7] + "></a><a href='#'>" +
+                        "<i>" + data[i][3] + "</i>" +
+                        "</a>" +
+                        "<span>￥<s style='color:#F60'>" + data[i][4] + "</s></span>" +
+                        "<p>已售:<s style='color:#111'>" + data[i][10] + "</s>件</p></li>").appendTo($("#test"));
+                }
+            }, error: function () {
+                alert("异常");
+            }
+        });
+    }
+    //销量从高到低排序
+    function sales() {
+        $.ajax({
+            url: "sales",
+            type: "post",
+            dataType: "json",
+            data: {store: store},
+            headers: {"X-CSRFToken": csrftoken},
+            success: function (data) {
+                //删除原来的数据，显示查询后的结果
+                $("#test").empty();
+                //获取查询的数据替换店铺内原来的商品，实现查询的结果
+                for (i = 0; i < data.length; i++) {
+                    $("<li><a href=/home/details?id=" + data[i][1] + ">" +
+                        "<img src=" + data[i][7] + "></a><a href='#'>" +
+                        "<i>" + data[i][3] + "</i>" +
+                        "</a>" +
+                        "<span>￥<s style='color:#F60'>" + data[i][4] + "</s></span>" +
+                        "<p>已售:<s style='color:#111'>" + data[i][10] + "</s>件</p></li>").appendTo($("#test"));
+                }
+            }, error: function () {
+                alert("异常");
+            }
+        });
+    }
+    //收藏降序
+    function collect() {
+        $.ajax({
+            url: "collect",
+            type: "post",
+            dataType: "json",
+            data: {store: store},
+            headers: {"X-CSRFToken": csrftoken},
+            success: function (data) {
+                //删除原来的数据，显示查询后的结果
+                $("#test").empty();
+                //获取查询的数据替换店铺内原来的商品，实现查询的结果
+                for (i = 0; i < data.length; i++) {
+                    $("<li><a href=/home/details?id=" + data[i][1] + ">" +
+                        "<img src=" + data[i][7] + "></a><a href='#'>" +
+                        "<i>" + data[i][3] + "</i>" +
+                        "</a>" +
+                        "<span>￥<s style='color:#F60'>" + data[i][4] + "</s></span>" +
+                        "<p>已售:<s style='color:#111'>" + data[i][10] + "</s>件</p></li>").appendTo($("#test"));
+                }
+            }, error: function () {
+                alert("异常");
+            }
+        });
+    }
+    //店铺内搜索，Ajax的方式从后天获取数据，然后查询数据返回到当前页面来，循环替换数据，加载方式更加友好
+    //未完成功能搜索后的价格升序降序，或者销量排序。。。。。。
+    function search() {
+        var trade_name = $("#shop").val();
+        {#//把搜索的商品名传过去#}
+        {#location.href = "search_store?shop_name=" + trade_name + "&store="+store;#}
+        $.ajax({
+            url:"search_store",
+            type:"post",
+            dataType:"json",
+            data:{shop_name:trade_name,store:store},
+            headers: {"X-CSRFToken": csrftoken},
+            success:function (data) {
+                //删除原来的数据，显示查询后的结果
+                $("#test").empty();
+                //获取查询的数据替换店铺内原来的商品，实现查询的结果
+                for(i=0; i<data.length; i++){
+                    $("<li><a href=/home/details?id="+data[i][1]+">" +
+                        "<img src="+data[i][7]+"></a><a href='#'>" +
+                        "<i>"+data[i][3]+"</i>" +
+                        "</a>" +
+                        "<span>￥<s style='color:#F60'>"+data[i][4]+"</s></span>" +
+                        "<p>已售:<s style='color:#111'>"+data[i][10]+"</s>件</p></li>").appendTo($("#test"));
+                }
+            },error:function () {
+                alert("异常");
+            }
+        })
+    }
+    //删除店铺收藏
+    function del_store() {
+        var flag = confirm("确定删除收藏？");
+        if (flag) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "del_store",
+                data:{store_name:store},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    alert("已取消收藏！");
+                    location.href = "store?store_name=" + store
+                },
+                error: function () {
+                    alert("异常");
+                }
+            });
+        }
+    }
+    //收藏店铺
+    function add_store() {
+        if ("{{ data.name }}" == "None") {
+            var flag = confirm("请登录");
+            if (flag){
+                location.href="/register/login"
+            }
+        } else {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "add_store",
+                data:{store_name:store},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    alert("已收藏店铺！");
+                    location.href = "store?store_name=" + store
+                },
+                error: function () {
+                    alert("异常");
+                }
+            });
+        }
+    }
+</script>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</body>
+</html>
+

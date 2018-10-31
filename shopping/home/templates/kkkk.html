@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="{{ url_for("home.static", filename="js/jquery-3.2.1.min.js") }}"></script>
+    <title>Title</title>
+</head>
+<body>
+<button id="aa">asadsads</button>
+</body>
+<script>
+    {#var csrftoken = $("meta[name=csrf-token]").attr("content");#}
+    $("#aa").click(function () {
+        $.ajax({
+            url: "/kkkk",
+            type: "get",
+            dataType: "json",
+            {#data:{shop_id:shop_id, state: state},#}
+            {#headers: {"X-CSRFToken": csrftoken},#}
+            success: function (data) {
+                alert(data);
+                location.href = "modal"
+            },
+            error: function () {
+                alert("异常");
+            }
+        });
+    })
+</script>
+</html>

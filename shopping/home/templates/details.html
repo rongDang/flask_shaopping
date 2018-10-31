@@ -1,0 +1,1050 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>详情页</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/top.css") }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/lunbo.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/zhanshi.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/footer.css") }}">
+    <!--城市选择js-->
+    <script src="{{ url_for("home.static",filename="js/city.js/cityJson.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/city.js/citySet.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/city.js/Popt.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/jquery-1.8.3.min.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/public.js") }}"></script>
+    <!--懒惰加载图片js-->
+    <script src="{{ url_for("home.static",filename="js/jquery.lazyload.js") }}"></script>
+    <!--展示图片放大js-->
+    <script src="{{ url_for("home.static",filename="js/163css.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/lib.js") }}"></script>
+</head>
+
+<body>
+<!--顶部菜单有改动与首页的不一样，请单独调用-->
+<div class="dy1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+    <div class="dy2">
+        <ul class="dy3">
+            <li><a href="#" onclick="location.href='index'">小白首页<br/>小白首页</a></li>
+            <li><a href="#" id="diyunapp">商城APP<br/>商城APP</a></li>
+        </ul>
+        <ul class="dy4">
+            {% if data.name %}
+                <li>
+                    <a href="#" id="name" onclick="location.href='vipcenter'">{{ data.nick_name }}<br/>{{ data.nick_name }}</a>
+                </li>
+                <li><a href="#" onclick="location.href='logout'">退出登录<br/>退出登录</a></li>
+            {% else %}
+                <li><a href="/register/login" id="name">登录<br/>登录</a></li>
+                <li><a href="/register/sign">注册<br/>注册</a></li>
+            {% endif %}
+        </ul>
+        <div class="dy9">
+            <img src="{{ url_for("home.static",filename="img/phone.png") }}"/>
+        </div>
+    </div>
+</div>
+<!--logo加时间加搜索框-->
+<div class="dy10">
+	<div class="dy11">
+    	<img src="{{ url_for("home.static",filename="img/logo2.png") }}"/>
+    </div>
+    <div class="dy13">
+    	<embed src="{{ url_for("home.static",filename="img/honehone_clock_wh.swf") }}" style=" height:45px; width:120px"></embed>
+    </div>
+    <div class="dy12">
+    	<input type="text" placeholder="搜索商品/店铺" id="shop_name" style="width:500px; height:36px; text-indent:12px; font-size:12px; color:#666; float:left">
+        <input type="button" onclick="sou()" value="搜索" style=" cursor:pointer; width:70px; height:36px; float:right; text-align:center; background:#333;" class="shousuo">
+    </div>
+</div>
+<!--你当前位置 -->
+<div class="nowweizhi">
+    <a href="index">首页</a><b>></b><a href="#">详情页面</a>
+</div>
+<!--商品展示区域-->
+<div class="theshopshow">
+	<!--left-->
+    <!-- 商品展示 -->
+    <div id="preview">
+        {% for img in data.result %}
+            <!--open() 方法用于打开一个新的浏览器窗口或查找一个已命名的窗口。-->
+            <div class=jqzoom id="spec-n1" onClick="window.open('/')">
+                <img height="350" src="{{ data.himg.0 }}" width="350">
+            </div>
+            <div id="spec-n5">
+                <div class=control id="spec-left">
+                    <img src="{{ url_for("home.static",filename="img/left.gif") }}"/>
+                </div>
+                <div id="spec-list">
+                    <ul class="list-h">
+                        <!--图片展示区域-->
+                        {% for foo in data.himg[0:5] %}
+                            <li><img src="{{ foo }}"></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class=control id="spec-right">
+                    <img src="{{ url_for("home.static",filename="img/right.gif") }}"/>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <!-- 帝云商品展示 End -->
+	<!--right商品的基本信息-->
+    <div class="shoppnum">
+    	<!--n1-->
+        <div class="shanpmai">
+        	<h1 class="spdname">{{ data.result.0.3 }}</h1>
+            <div class="hotspeak">全场免邮，支持货到付款</div>
+            <div class="shoujiap"><span>商城价格</span><i>{{ data.result.0.4 }}</i>￥</div>
+            <div class="chuxinxi"><span>促销信息</span><i>此商品暂无促销活动</i></div>
+            <div class="shoujigm">
+            	<span>APP独享打折</span>
+                <div class="sjapp">用手机购买<b><img src="../static/img/二维码.png"/></b></div>
+            </div>
+            <div class="peisongzhi">
+            	<span>配送至</span>
+                <div class="choosecity">
+                	<input type="text" id="city" value="点击选择地区" style=" height:20px; font-size:12px; margin-top:5px; border:1px solid #cacace">
+                </div>
+            </div>
+            <div class="xuanzcolor">
+                <div class="choosecm">
+                	<span>颜色分类</span>
+                    <div class="morecm">
+                    	<ul>
+                        	<li><a href="#">{{ data.result.0.5 }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="choosecm">
+                	<span>选择套餐</span>
+                    <div class="morecm">
+                    	<ul>
+                        	<li><a href="#">{{ data.result.0.6 }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!--购买数量-->
+                <div class="goumaijiajian">
+                    <span>购买数量</span>
+                    <input id="min" name="" type="button" value="-"  style=" width:30px; height:30px; font-size:12px; line-height:30px; color:#333; float:left; cursor:pointer">
+                    <input id="text_box" name="" type="text" value="1" style="width:60px;height:30px; font-size:12px; text-align:center; float:left"/>
+                    <input id="add" name="" type="button" value="+"  style=" width:30px; height:30px; font-size:12px; line-height:30px; color:#333; float:left; cursor:pointer">
+				</div>
+                <script type="text/javascript">
+                    var shop_id = "{{ data.result.0.1 }}";
+                    var store = "{{ data.result.0.2 }}";
+                    var csrftoken = $("meta[name=csrf-token]").attr("content");
+                    //商品收藏
+                    function add_cang() {
+                        if("{{ data.name }}"!="None"){
+                            $.ajax({
+                                url: "add_shop",
+                                type: "POST",
+                                dataType: "json",
+                                data: {shop_id: shop_id},
+                                headers: {"X-CSRFToken": csrftoken},
+                                success: function (data) {
+                                    alert("收藏成功");
+                                    location.href = "details?id=" + shop_id
+                                }
+                            }
+                        )}else{
+                            var flag = confirm("请登录");
+                            if (flag){
+                                location.href="/register/login"
+                            }
+                        }
+                    }
+                    function del_cang() {
+                        var flag = confirm("确定要取消收藏吗？");
+                        if (flag) {
+                            $.ajax({
+                                url: "del_shop",
+                                type: "post",
+                                dataType: "json",
+                                data:{shop_id:shop_id},
+                                headers: {"X-CSRFToken": csrftoken},
+                                success: function (data) {
+                                    //删除成功后再返回此页面
+                                    location.href = "details?id=" + shop_id
+                                },
+                                error: function () {
+                                    alert("异常");
+                                }
+                            });
+                        }
+                    }
+                    //添加商品到购物车操作，
+                    function add_cart() {
+                        if ("{{ data.name }}"!="None"){
+                            var number = $("#text_box").val();
+                            $.ajax({
+                                url: "add_cart",
+                                type: "POST",
+                                dataType: "json",
+                                data: {shop_id: shop_id,number:number},
+                                headers: {"X-CSRFToken": csrftoken},
+                                success: function (data) {
+                                    alert("添加成功！");
+                                    location.href = "details?id=" + shop_id
+                                }
+                            })
+                        }else{
+                            var flag = confirm("请登录");
+                            if(flag){
+                                location.href="/register/login"
+                            }
+                        }
+                    }
+                    //添加店铺收藏
+                    function add_store() {
+                        if("{{ data.name }}"!="None"){
+                            var F = confirm("是否收藏店铺？");
+                            if(F){
+                                $.ajax({
+                                    url: "add_store",
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: {store_name: store},
+                                    headers: {"X-CSRFToken": csrftoken},
+                                    success: function (data) {
+                                        alert("收藏成功");
+                                        location.href = "details?id=" + shop_id
+                                    }
+                                })
+                            }
+                        }else{
+                            var flag = confirm("请登录");
+                            if (flag){
+                                location.href="/register/login"
+                            }
+                        }
+                    }
+                    //删除店铺收藏
+                    function del_store() {
+                        var F = confirm("取消收藏？");
+                        if(F){
+                           $.ajax({
+                               url: "del_store",
+                               type: "POST",
+                               dataType: "json",
+                               data: {store_name: store},
+                               headers: {"X-CSRFToken": csrftoken},
+                               success: function (data) {
+                                   alert("已取消收藏");
+                                   location.href = "details?id=" + shop_id
+                               }
+                            })
+                        }
+                    }
+                    {#function buy() {#}
+                    {#    var name = '{{ name }}';#}
+                    {#    if (name == "None" || name == "") {#}
+                    {#        var flag = confirm("请登陆");#}
+                    {#        if (flag) {#}
+                    {#            location.href = "login"#}
+                    {#        }#}
+                    {#    } else {#}
+                    {#        //获取对对应的用户信息,跳转到立即支付页面,店铺名，商品名，价格，数量#}
+                    {#        var number = parseInt(document.getElementById("text_box").value);#}
+                    {#        var id = "{{ shuju.0.1 }}";#}
+                    {#        var prices = {{ shuju.0.4 }};#}
+                    {#        var store = '{{ shuju.0.2 }}';#}
+                    {#        var title = '{{ shuju.0.3 }}';#}
+                    {#        var img = '{{ shuju.0.7 }}';#}
+                    {#        location.href = "buy?store=" + store + "&title=" + title + "&img=" + img + "&price=" + prices + "&number=" + number + "&id=" + id;#}
+                    {#    }#}
+                    //{#}#}
+                </script>
+                 <!--加入购物车与收藏商品，收藏商品和店铺如果已经收藏了则不能收藏（显示已经收藏）再点击收藏商品则提示是否取消收藏-->
+                <div class="joinspadsp">
+                <!--暂时不实现立即购买，立即购买页面没有-->
+                    <a href="#" style=" margin-left:67px" onclick="buy()">立即购买</a>
+                    <!--在数据库中购物表中插入一条数据，收藏类似-->
+                    <a href="#" style=" margin-left:6px" onclick="add_cart()">加入购物车</a>
+                    {% if data.result2 %}
+                        <a href="#" style=" margin-left:6px" onclick="del_cang()">已收藏</a>
+                    {% else %}
+                        <a href="#" style=" margin-left:6px" onclick="add_cang()">收藏该商品</a>
+                    {% endif %}
+                </div>
+                <!--商品编号-->
+                <div class="shopbh">
+                    <span>商品编号</span>
+                    <em>{{ data.result.0.1 }}</em>
+                </div>
+            </div>
+        </div>
+    	<!--n2-->
+        <div class="daitianc">
+            <!--显示一些别的电脑数据-->
+        	<span class="lkadlk">瞧了又瞧</span>
+            <div class="lklksp">
+            	<ul>
+                    {% for foo in data.guess %}
+                        <li>
+                            <a href="#" onclick="location.href='details?id='+'{{ foo.1 }}'">
+                                <b>
+                                    <img src="{{ foo.7 }}"/>
+                                </b>
+                                <p style="font-size: 8px">{{ foo.3 }}</p>
+                                <span>{{ foo.4 }}元</span>
+                            </a>
+                            <a href="#" style=" width:163px; height:20px;font-size:11px; color:#666; line-height:20px; text-align:center" class="theqjd" onclick="location.href='store?store_name='+'{{ foo.2 }}'">{{ foo.2 }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!--上去下来的按钮-->
+            <div class="ananniu shangfan" style=" background: url({{ url_for("home.static",filename="img/__sprite.png") }}) no-repeat 0 0; margin-left:70px"></div>
+            <div class="ananniu xiafan" style=" background:url({{ url_for("home.static",filename="img/__sprite.png") }}) no-repeat -28px 0; margin-left:50px"></div>
+        </div>
+    </div>
+</div>
+<!--店长推荐，这里显示的是该店铺里面有的商品-->
+<div class="bosstuijian">
+	<div class="bosstj">
+    	<span>店长推荐</span>
+    </div>
+    <div class="bosstjsp">
+    	<ul>
+            {% for foo in data.result1[0:6] %}
+                <li>
+                    <a href="#" onclick="location.href='details?id='+'{{ foo.1 }}'">
+                        <b><img src="{{ foo.7 }}"/></b>
+                        <p>{{ foo.3 }}</p>
+                        <span>{{ foo.4 }}元</span>
+                    </a>
+                    <a href="#" style=" display:block; width:100%; height:20px; font-size:12px; color:#666; line-height:20px; text-align:center" class="dyzydo" onclick="location.href='store?store_name='+'{{ foo.2 }}'">{{ foo.2 }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<!--商品介绍东西有点多-->
+<div class="spjsmore">
+	<!--左-->
+    <div class="theleftkz">
+    	<div class="dpnames">
+            <!--数据库中显示店铺信息-->
+        	<a href="#" onclick="location.href='store?store_name='+'{{ data.result.0.2 }}'">{{ data.result.0.2 }}</a>
+        </div>
+        <div class="intolkads">
+            <!--进入到指定的店铺页面，点击收藏店铺-->
+        	<a href="#" onclick="location.href='store?store_name='+'{{ data.result.0.2 }}'">进店看看</a>
+            {% if data.result3 %}
+                <a href="#" onclick="del_store()">已收藏</a>
+            {% else %}
+                <a href="#" onclick="add_store()">收藏店铺</a>
+            {% endif %}
+        </div>
+        <div class="nknzaizhao">你可能在找</div>
+        <div class="zaizdnr">
+        	<ul>
+            	<li><a href="#">window10</a></li>
+                <li><a href="#">4g</a></li>
+                <li><a href="#">gtx967</a></li>
+                <li><a href="#">1T</a></li>
+                <li><a href="#">机械键盘</a></li>
+                <li><a href="#">背光键盘</a></li>
+                <li><a href="#">游戏主机</a></li>
+                <li><a href="#">显卡</a></li>
+                <li><a href="#">高清大屏显示器</a></li>
+                <li><a href="#">GTA5</a></li>
+                <li><a href="#">专业音响</a></li>
+            </ul>
+        </div>
+        <div class="xianguanfls">相关分类</div>
+        <div class="aboutflsnr">
+        	<ul>
+            	<li><a href="#">笔记本</a></li>
+                <li><a href="#">超极本</a></li>
+                <li><a href="#">游戏本</a></li>
+                <li><a href="#">平板电脑</a></li>
+                <li><a href="#">平板电脑配件</a></li>
+                <li><a href="#">台式机</a></li>
+                <li><a href="#">服务器</a></li>
+                <li><a href="#">工作站</a></li>
+                <li><a href="#">笔记本配件</a></li>
+                <li><a href="#">一体机</a></li>
+                <li><a href="#">网吧机</a></li>
+                <li><a href="#">主板</a></li>
+            </ul>
+        </div>
+        <!--达人选购显示店铺销量差的3件商品，骗用户购买-->
+        <div class="drxgs">达人选购</div>
+        <div class="drxgsp">
+        	<ul>
+            	<li>
+                	<a href="#">
+                    	<b>
+                        	<img src="{{ url_for("home.static",filename="img/chose1.png") }}"/>
+                        </b>
+                        <h5>夏季短袖</h5>
+                        <p>299元</p>
+                    </a>
+                    <a href="#" style=" display:block; width:100%; height:20px; text-align:center; color:#666; font-size:12px; line-height:12px">官方自营店</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--右-->
+    <div class="therightnrs">
+    	<div class="threespa">
+            <ul>
+                <li class="oncolors" mt-floors="1" mt-cts="1" id="spencals1">商品介绍</li>
+                <li mt-floors="2" mt-cts="1" id="spencals2">商品评价<s>(1297)</s></li>
+            </ul>
+        </div>
+        <!--大容器里面放若干内容-->
+        <div class="drqlmfrgnr">
+       	<!--商品自诩-->
+        	<div class="bigcakes c-1-1">
+            <!--如果数据库中没有那么多条的详情图片信息，则会出现图片显示不了-->
+                {% for img in data.imgs %}
+                    <img class="lazy" data-original="{{ img }}"/>
+                {% endfor %}
+            </div>
+            <script>
+                $(function () {
+                    /*控制商品详情、商品评价、售后保障的出现或消失 当鼠标指针穿过元素时，会发生 mouseenter 事件。*/
+                    $(".threespa ul li").click(function () {
+                        $(this).addClass("oncolors").siblings().removeClass("oncolors")
+                    });
+                    /*控制商品评价里面导航块的添加颜色或减去颜色*/
+                    $(".quanbupinglun a").click(function () {
+                        $(this).addClass("nocolors").siblings().removeClass("nocolors")
+                    });
+                    <!--测试使用jQuery的lazyload插件来异步加载图片，只有当移动到图片时才会显示图片，其他看不到的图片不显示-->
+                    $("img.lazy").lazyload({
+                        placeholder: "{{ url_for("home.static",filename="img/f02.jpg") }}",
+                        effect: "fadeIn"
+                    });
+                    //图片放大的jQuery
+                    $(".jqzoom").jqueryzoom({
+                        xzoom: 400,
+                        yzoom: 400,
+                        offset: 10,
+                        position: "right",
+                        preload: 1,
+                        lens: 1
+                    });
+                    $("#spec-list").jdMarquee({
+                        deriction: "left",
+                        width: 350,
+                        height: 56,
+                        step: 2,
+                        speed: 4,
+                        delay: 10,
+                        control: true,
+                        _front: "#spec-right",
+                        _back: "#spec-left"
+                    });
+                    $("#spec-list img").bind("mouseover", function () {
+                        var src = $(this).attr("src");
+                        $("#spec-n1 img").eq(0).attr({
+                            src: src.replace("\/n5\/", "\/n1\/"),
+                            jqimg: src.replace("\/n5\/", "\/n0\/")
+                        });
+                        $(this).css({
+                            "border": "2px solid #ff6600",
+                            "padding": "1px"
+                        });
+                    }).bind("mouseout", function () {
+                        $(this).css({
+                            "border": "1px solid #ccc",
+                            "padding": "2px"
+                        });
+                    });
+                    //点击选择地区,现有的js插件
+                    $("#city").click(function (e) {
+                        SelCity(this,e);
+                    });
+                    //颜色分类，点击会有边框出现
+                    $(".morecolor ul li").click(function(){
+                        $(this).css({border:"1px solid #f00"}).siblings().css({border:"none"})
+                    });
+                    $(".morecm ul li").click(function(){
+                        $(this).css({border:"1px solid #f00"}).siblings().css({border:"1px solid #cacace"})
+                    });
+                    //瞧了又瞧效果演示图
+                    var i=0;
+                    //size() 方法返回被 jQuery 选择器匹配的元素的数量。
+                    var size = $(".lklksp ul li").size();
+                    $(".shangfan").click(function () {
+                        i++;
+                        if (i == size - 1) {
+                            i = 0;
+                        }
+                        //animate() 方法执行 CSS 属性集的自定义动画。
+                        $(".lklksp ul").animate({top: -i * 218})
+                    });
+                    $(".xiafan").click(function () {
+                        i--;
+                        if (i == -1) {
+                            i = size - 2
+                        }
+                        $(".lklksp ul").animate({top: -i * 218})
+                    });
+                    //商品的加减，首先获得文本框对象
+                    var t = $("#text_box");
+                    //初始化数量为1,并失效减
+                    $('#min').attr('disabled', true);
+                    //数量增加操作
+                    $("#add").click(function () {
+                        t.val(parseInt(t.val()) + 1);
+                        if (parseInt(t.val()) != 1) {
+                            $('#min').attr('disabled', false);
+                        }
+                    });
+                    //数量减少操作
+                    $("#min").click(function () {
+                        t.val(parseInt(t.val()) - 1);
+                        if (parseInt(t.val()) == 1) {
+                            $('#min').attr('disabled', true);
+                        }
+                    })
+                        function sou() {
+                            var shop_name = document.getElementById("shop_name").value;
+                            //把搜索的商品名传过去
+                            location.href="search?shop_name="+shop_name;
+                        }
+                })
+            </script>
+            <!--商品评价-->
+            <div class="bigcakes c-2-1">
+            	<div class="quanbupinglun">
+                	<a href="#" class="nocolors" mt-floord="1" mt-ctd="1">全部评论<em>(1010)</em></a>
+                    <a href="#" mt-floord="2" mt-ctd="1">好评<em>(600)</em></a>
+                    <a href="#" mt-floord="3" mt-ctd="1">中评<em>(300)</em></a>
+                    <a href="#" mt-floord="4" mt-ctd="1">差评<em>(10)</em></a>
+                </div>
+                <!--这个容器里面放了全部评论、好评、中评、差评、-->
+                <div class="qbpltyf123">
+                <!--全部评论-->
+                	<div class="smallcake d-1-1" style="display:block">
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat 0 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat -17px 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat -34px 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat -51px 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat -68px 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat -82px 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+
+                    </div>
+                <!--好评-->
+                	<div class="smallcake d-2-1">
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat 0 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat 0 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat 0 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    </div>
+                <!--中评-->
+                	<div class="smallcake d-3-1">
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat 0 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat 0 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat 0 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat 0 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    </div>
+                <!--差评-->
+                	<div class="smallcake d-4-1">
+                    <!--一条评论开始-->
+                    	<div class="thepcpls">
+                        <!--左-->
+                        	<div class="zuileftop">
+                            	<!--改变星级只需要改" no-repeat X 0"里面的X即可，一次是17像素-->
+                            	<div class="thstar" style=" background:url(../static/img/commentsListIcons1.png) no-repeat 0 0"></div>
+                                <div class="shdltpl">收货1天后评论</div>
+                                <div class="shdplsj">2016-6-6&nbsp;16:28</div>
+                            </div>
+                        <!--中-->
+                        	<div class="zuicenterop">
+                            	尺码标准，面料舒适，买给爸爸的，穿上很合身，非常感谢卖家诚信善良用心经营店铺，全5分支持!值得推荐购买！
+                            </div>
+                        <!--右-->
+                        	<div class="zuirightop">
+                            	<div class="touxadmz">
+                                	<b>
+                                    	<img src="../static/img/touxiang.png"/>
+                                    </b>
+                                    <em>小******明</em>
+                                </div>
+                                <div class="zgrsndra">山东</div>
+                            </div>
+                            <!--购买的商品信息-->
+                            <div class="gmdspxinxisz">
+                                <a href="#">商品的名字什么商品</a>
+                                <em>9999元</em>
+                            </div>
+                        </div>
+                    <!-- 一条评论结束-->
+                    </div>
+                <!--差评结束-->
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            /*控制商品详情、商品评价、售后保障的出现或消失*/
+            $(function () {
+                $(".threespa ul li").click(function () {
+                    var frs = $(this).attr("mt-floors");
+                    var cats = $(this).attr("mt-cts");
+                    $(".c-" + frs + "-" + cats + "").show().siblings().hide();
+                });
+                /*这个有点特殊*/
+                $("#spencals1").click(function () {
+                    $(".c-1-1").show();
+                    $(".c-2-1").show();
+                    $(".c-3-1").show();
+                });
+                $("#spencals3").click(function () {
+                    $(".c-3-1").show();
+                    $(".c-2-1").show();
+                });
+
+                /*控制全部评论、好评、中评、差评的块的出现或消失*/
+                $(".quanbupinglun a").click(function () {
+                    var frd = $(this).attr("mt-floord");
+                    var catd = $(this).attr("mt-ctd");
+                    $(".d-" + frd + "-" + catd + "").show().siblings().hide();
+                })
+            })
+        </script>
+        <!--这里一切测试正常，现在我去掉容器里面各个div的颜色-->
+    </div>
+</div>
+<!--页脚-->
+<div class="footer">
+	<div class="box" style=" width:1226px; margin:0 auto">
+        <ul class="lian">
+            <li>
+                <p><img src="{{ url_for("home.static",filename="img/fot.png") }}">新手指南</p>
+                <a href="#">账户注册</a>
+                <a href="#">购物流程</a>
+                <a href="#">网站地图</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static",filename="img/fot1.png") }}">支付方式</p>
+                <a href="#">货到付款</a>
+                <a href="#">在线支付</a>
+                <a href="#">礼品卡及账户余额</a>
+                <a href="#">其他支付方式</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static",filename="img/fot2.png") }}">配送说明</p>
+                <a href="#">配送运费</a>
+                <a href="#">配送时间</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static",filename="img/fot3.png") }}">售后服务</p>
+                <a href="#">退换货政策</a>
+                <a href="#">退换货办理流程</a>
+                <a href="#">退换货网上办理</a>
+                <a href="#">退款说明</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static",filename="img/fot4.png") }}">关于我们</p>
+                <a href="#">公司简介</a>
+                <a href="#">合作专区</a>
+                <a href="#">联系我们</a>
+                <a href="#">友情链接</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static",filename="img/fot5.png") }}">帮助中心</p>
+                <a href="#">找回密码</a>
+                <a href="#">邮件订阅</a>
+                <a href="#">产品册订阅</a>
+                <a href="#">隐私声明</a>
+            </li>
+        </ul>
+        <ul class="adv">
+        	<li><img src="{{ url_for("home.static",filename="img/adv.png") }}">正品保障</li>
+            <li><img src="{{ url_for("home.static",filename="img/adv1.png") }}">免运费</li>
+            <li><img src="{{ url_for("home.static",filename="img/adv2.png") }}">送货上门</li>
+            <li style="border-right:none;"><img src="{{ url_for("home.static",filename="img/adv3.png") }}">实物拍摄</li>
+        </ul>
+        <p class="ad">地址：山东省济南市天桥区历山北路黄台电子商务产业园1020室 &nbsp;&nbsp;&nbsp;邮箱：xiaobai.com.cn &nbsp;&nbsp;&nbsp;邮编:210008 &nbsp;&nbsp;&nbsp;电话:025-83218155</p>
+        <p class="ad">Copyright © 2010 - 2013, 版权所有 SHUIGUO.COM &nbsp;&nbsp;&nbsp;苏ICP备10088888号-1</p>
+    </div>
+</div>
+
+</body>
+</html>

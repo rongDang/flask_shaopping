@@ -1,0 +1,99 @@
+当我们在app.py中给所有的视图添加csrf保护后，注册的蓝图也就有了csrf保护
+
+            关于导包的问题:ImportError: cannot import name 'csrf'
+导包的顺序需要注意，因为程序总是从上到下执行的，在flask项目中app.py是项目的运行文件
+所有项目从app.py中从上到下运行，在app.py中我导入了下面文件：
+    1，from flask import Flask
+    2，from flask_wtf.csrf import CSRFProtect
+    3，from shopping.register.register_module import register
+    4，app = Flask(__name__)
+    5，csrf = CSRFProtect(app)
+
+而在我的蓝图文件register_module.py中，我又进行了一些包的导入：
+    from app import csrf
+在蓝图这里我想从app中导入csrf对象，而此时app.py中运行到第3句就会到蓝图文件中到register对象
+而在蓝图中我又到app.py中进行from app import csrf 这样程序又会到app.py中进行导入csrf，
+然后就卡住了，具体的原理我忘记了，但是把app.py中第3句导包移到第5句下面就没有问题了
+
+                                忘记密码(已解决)
+用户登录点击忘记密码，跳转到密码重置密码页面，用户输入注册的邮箱或电话号码，后台会接收输入的内容
+到数据库中进行查询是否存在该账号，用户全都输入正确才能点击进入到验证码发送页面。
+在安全验证页面点击发送会向用户邮箱或电话发送一条数字验证码，验证正确才能进入到最后的密码重置页面。
+（如果直接输入重置密码的URL会重定向到忘记密码页面，该如何进行判断？）
+
+实现难题：用户上传头像保存到本地磁盘，然后把路径存储到数据库中，如果用户需要更改需要更改图片该如何做？
+（测试发现如果上传是同名同类型的图片文件后面的文件会替换原来的文件，这样的话我们可以把用户上传的图片名设置为
+和原来一样的名字和类型，这样就可以直接替换原来的图片而不需要再去删除用户原来的头像图片）
+如果是存储二进制数据流到数据库中的话，那么需要涉及到数据通信，头像的二进制数据传输到网页有数据大小限制，
+而且随着数据库数据量的增大，这样存储头像会影响数据库性能。
+
+                                登录问题(已解决)
+在此项目中，用户的昵称不作为唯一的标识，而是采用用户注册的电话或者后面绑定的邮箱作为唯一标识，所以用户可以随意修改昵称
+
+                                邮箱绑定(已解决)
+在后面绑定邮箱配置中，用户要绑定的邮箱必须是数据库中不存在的邮箱，如果数据库中存在该邮箱则证明邮箱被别人绑定了，
+所以不能再进行绑定，如果一个邮箱被多个用户绑定的话，在用户登录的时候可能会出现数据的混淆
+
+                                加入购物车
+把商品加入到购物车，只需要把商品的ID，添加的数量，用户名，添加的日期，默认状态(未支付0)，添加到购物车表(价格js计算)
+如果用户在购物车中已经有这个商品了且没有付款，用户再添加相同商品到购物车，只需在原来商品的数量上再加一，
+
+                                查询后的分页
+搜索后有许多的内容，全都显示出来则会特别长，给查询出来的内容进行分页，根据你查询出的内容进行一个猜你喜欢(对应查询种类销量高的商品)
+
+商品有5种，1电脑，2手机，3平板，4配件，5硬件
+cart_shop = []
+    for i in cart:
+        sql.select("select * from commodity where shop_id='%s'" % i[1])
+        cart_shop.append()
+
+flask中的配置文件是一个flask.config.Config对象（继承字典）,默认配置为：
+    {
+        'DEBUG':                                get_debug_flag(default=False),  是否开启Debug模式
+        'TESTING':                              False,                          是否开启测试模式
+        'PROPAGATE_EXCEPTIONS':                 None,
+        'PRESERVE_CONTEXT_ON_EXCEPTION':        None,
+        'SECRET_KEY':                           None,
+        'PERMANENT_SESSION_LIFETIME':           timedelta(days=31),
+        'USE_X_SENDFILE':                       False,
+        'LOGGER_NAME':                          None,
+        'LOGGER_HANDLER_POLICY':               'always',
+        'SERVER_NAME':                          None,
+        'APPLICATION_ROOT':                     None,
+        'SESSION_COOKIE_NAME':                  'session',
+        'SESSION_COOKIE_DOMAIN':                None,
+        'SESSION_COOKIE_PATH':                  None,
+        'SESSION_COOKIE_HTTPONLY':              True,
+        'SESSION_COOKIE_SECURE':                False,
+        'SESSION_REFRESH_EACH_REQUEST':         True,
+        'MAX_CONTENT_LENGTH':                   None,
+        'SEND_FILE_MAX_AGE_DEFAULT':            timedelta(hours=12),
+        'TRAP_BAD_REQUEST_ERRORS':              False,
+        'TRAP_HTTP_EXCEPTIONS':                 False,
+        'EXPLAIN_TEMPLATE_LOADING':             False,
+        'PREFERRED_URL_SCHEME':                 'http',
+        'JSON_AS_ASCII':                        True,
+        'JSON_SORT_KEYS':                       True,
+        'JSONIFY_PRETTYPRINT_REGULAR':          True,
+        'JSONIFY_MIMETYPE':                     'application/json',
+        'TEMPLATES_AUTO_RELOAD':                None,
+    }
+
+蓝图中的错误处理程序有些不同，如果使用errorhandler修饰器，那么只有蓝图中的错误才能触发处理程序。
+当我们不是使用的工厂模式创建app时，app.errorhandler(401)，即可捕捉全局401状态；若使用了create_app方式创建app，
+则无法进行捕捉，若想捕捉，可以在蓝图中写，如admin.errorhandler(401)，即捕捉admin蓝图下所有401状态码，
+admin.app_errorhandler(401)，则是捕捉的全局的401状态码，即其他蓝图中的401状态，也会被捕捉，进行处理
+
+关于Ajax请求发送成功，但是不进入到success中的解决方法：
+    在写关于用户收货操作，输入支付密码后Ajax的后台判断出现的问题，Ajax用的数据类型是json类型，而Ajax访问的方法judge
+    所返回的数据是纯String类型，点击确认收货，Ajax请求judge方法的状态码也是200，但是却进入不到judge方法里面。
+
+原因：后台返回的json数据是一个纯String类型的对象时，前端dataType属性设置为json后，
+会认为这个由String对象转换的json数据格式不是标准的json格式，所以就去执行error对应的方法了。
+
+解决方法：只需要将前端的数据传输类型改为 text 就可以 （dataType:text）,然后后台返回纯String类型也不会有问题了。
+
+点击确认收货则跳出一个模态框，用户输入支付密码就能收货成功（如果实现类似淘宝的自动收货？）
+收货成功后就到购物车表中删除该商品的数据(判断是状态为1的那条数据)，然后到商品评价表中添加一条数据，商品评价表和商品表联查
+//有一个问题，如果用户有两件相同商品待收货，且购买日期是同一天，如果不做判断，用户收货的话会将两件商品都收货，这里
+商品评价表，用户名，商品ID，日期（或是时间戳，表明该收货商品的独一性），评论内容。这里收货的每一件商品都是唯一的

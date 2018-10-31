@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>填写核对购物信息</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/top.css") }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/shangpingoumai.css") }}">
+    <script src="{{ url_for("home.static",filename="js/jquery-1.8.3.min.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/city.js/cityJson.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/city.js/citySet.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/city.js/Popt.js") }}"></script>
+</head>
+<body>
+<!--顶部菜单有改动与首页的不一样，请单独调用-->
+<div class="dy1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+    <div class="dy2">
+        <ul class="dy3">
+            <li><a href="#" onclick="location.href='index'">小白首页<br/>小白首页</a></li>
+            <li><a href="#" id="diyunapp">商城APP<br/>商城APP</a></li>
+        </ul>
+        <ul class="dy4">
+            {% if data.name %}
+                <li>
+                    <a href="#" id="name" onclick="location.href='vipcenter'">{{ data.nick_name }}<br/>{{ data.nick_name }}</a>
+                </li>
+                <li><a href="#" onclick="location.href='logout'">退出登录<br/>退出登录</a></li>
+            {% else %}
+                <li><a href="/register/login" id="name">登录<br/>登录</a></li>
+                <li><a href="/register/sign">注册<br/>注册</a></li>
+            {% endif %}
+        </ul>
+        <div class="dy9">
+            <img src="{{ url_for("home.static",filename="img/phone.png") }}"/>
+        </div>
+    </div>
+</div>
+<!--全部开始-->
+<div class="tianxiehedui">
+	<!--标题-->
+	<div class="rzhdndgw">温馨提示：请认真核对您的购物信息</div>
+    <!--收货人信息-->
+    <div class="shouhurxl clastyo">
+    	<div class="shouhurxl1">
+        	<em>收货人信息</em>
+        </div>
+    </div>
+    <div class="changepc" style="display: block">
+        <div class="opcaty1">
+            <div class="opcaty2">
+                <em>收货人姓名：</em>
+                <input style="float:left; border:1px solid #bbb; box-shadow:none; height:28px; font-size:12px; text-indent:6px" type="text" id="shou" class="shuru"/>
+            </div>
+            <div class="opcaty2">
+                <em>所在的地区：</em>
+                <input type="text" id="city" placeholder="点击选择地区" style=" height:28px; font-size:12px; border:1px solid #bbb; float:left">
+                <script type="text/javascript">
+                    $("#city").click(function (e) {
+                        SelCity(this,e);
+                    });
+                </script>
+            </div>
+            <div class="opcaty2">
+                <em>详细的地址：</em>
+                <input style="float:left; border:1px solid #bbb; box-shadow:none; height:28px; font-size:12px; text-indent:6px; width:488px" type="text" id="address" class="shuru" placeholder="请填写真实地址，不需要重复填写所在地区" required />
+            </div>
+            <div class="opcaty2">
+                <em>联系的电话：</em>
+                <input style="float:left; border:1px solid #bbb; box-shadow:none; height:28px; font-size:12px; text-indent:6px" type="text" id="phone" maxlength="11" class="shuru"/>
+            </div>
+        </div>
+    </div>
+    <div class="shouhurxl">
+    	<h3>支付方式</h3>
+        <div class="zhifufangsj1">
+        	<span>在线支付</span>
+        </div>
+    </div>
+    <!--商品清单-->
+    <div class="shouhurxl">
+    	<!--一条商品信息开始-->
+    	<div class="xxpop1" style="background:rgba(255,153,0,0.1); padding-bottom:6px">
+        	<div class="xxpop2">
+                <span>店铺</span>
+                <a href="#" onclick="location.href='store?store_name='+'{{ data.store }}'"><p>{{ data.store }}</p></a>
+            </div>
+            <div class="xxpop2" style=" width:630px">
+                <span>商品</span>
+                <a href="#" onclick="location.href='details?id='+'{{ data.id }}'">
+                    <p style=" line-height:20px">
+                        {{ data.title }}
+                    </p>
+                </a>
+            </div>
+            <div class="xxpop2">
+                <span>单价(元)</span>
+                <p>{{ data.price }}</p>
+            </div>
+            <div class="xxpop2">
+                <span>数量</span>
+                <p>{{ data.number }}</p>
+            </div>
+            <div class="xxpop2">
+                <span>小计(元)</span>
+                <p>{{ data.prices }}</p>
+            </div>
+        </div>
+        <div class="ddzjes">
+            <em>订单总金额：</em>
+            <em style=" padding-left:0"><s>{{ data.prices }}</s>元</em>
+        </div>
+    </div>
+    <a href="#" class="tijiaodingdang56" >提交订单</a>
+    </div>
+</body>
+<script type="text/javascript">
+    var csrftoken = $("meta[name=csrf-token]").attr("content");
+    $(".tijiaodingdang56").click(function () {
+        var name = $("#shou").val();
+        var city = $("#city").val();
+        var address = $("#address").val();
+        var phone = $("#phone").val();
+        var test = /^\d{11}/;
+        var title = "{{ data.title }}";
+        var prices = "{{ data.prices }}";
+        var id = "{{ data.id }}";
+        if (name && city && address && test.test(phone)){
+            $.ajax({
+                url: "pay",
+                type: "post",
+                dataType: "json",
+                data:{id:id,name:name,city:city,address:address,phone:phone,title:title,prices:prices},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    location.href = data;
+                },
+                error: function () {
+                    alert("异常");
+                }
+            });
+        }else {
+            alert("收货人信息不正确")
+        }
+    })
+</script>
+</html>    
+                     
+           
+            
+                
+                    
+            
+                
+        
+            
+        
+

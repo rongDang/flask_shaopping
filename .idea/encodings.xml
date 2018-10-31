@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/shopping/home/templates/my_cart.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shopping/pay/ying_yong_gong_yao.txt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shopping/pay/ying_yong_si_yao.txt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shopping/pay/zhi_fu_bao_gong_yao.txt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shopping/register/static/css/pintuer.css" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shopping/register/static/img/dai.jpg" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shopping/register/static/img/wd.jpg" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shopping/register/templates/register/404.html" charset="UTF-8" />
+    <file url="PROJECT" charset="GBK" />
+  </component>
+</project>

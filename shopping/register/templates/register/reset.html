@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>忘记密码</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for("register.static",filename='css/register-login.css') }}">
+</head>
+<body>
+<!--背景特效div-->
+<div id="box"></div>
+<!--<img src="../../static/img/81.jpg">-->
+<div class="cent-box">
+    <div class="cent-box-header">
+        <a href="#"><h1 class="main-title hide">小白商城</h1></a>
+        <h1>重置密码</h1>
+	</div>
+	<div class="cont-main clearfix">
+		<div class="index-tab">
+			<div class="index-slide-nav">
+                <a id="hint">请输入注册的邮箱地址或手机号码</a>
+			</div>
+		</div>
+        <div id="Login">
+            <div class="login form">
+                <div class="group">
+                    <meta name="csrf-token" content="{{ csrf_token() }}">
+                    <!--required属性表示为必填-->
+                    <div class="group-ipt email">
+                        <input type="text" name="email" id="email" class="ipt" placeholder="邮箱/手机号码" required>
+                    </div>
+                    <div class="group-ipt verify">
+                        <input type="text" name="verify" id="verify" class="ipt" placeholder="输入验证码" required>
+                        <img src="data:image/jpg;base64,{{ data.img }}" class="imgcode">
+                    </div>
+                </div>
+            </div>
+            <div class="button">
+                <button type="button" class="login-btn register-btn" id="button">下一步</button>
+            </div>
+        </div>
+	</div>
+</div>
+<div class="footer">
+	<p>小白商城 - Thousands Find</p>
+	<p>Designed By xiaobai & <a href="#">baidu.com</a> 2018</p>
+</div>
+<script src='{{ url_for("register.static",filename="js/particles.js") }}' type="text/javascript"></script>
+<script src='{{ url_for("register.static",filename="js/background.js") }}' type="text/javascript"></script>
+<script src='{{ url_for("register.static",filename="js/jquery.min.js") }}' type="text/javascript"></script>
+<script src='{{ url_for("register.static",filename="js/layer/layer.js") }}' type="text/javascript"></script>
+<script type="text/javascript">
+    var flag = true;var csrftoken =$("meta[name=csrf-token]").attr("content");
+    //Ajax判断输入的账号是否存在
+    $("#email").blur(function () {
+        var name = $("#email").val();
+        $.ajax({
+            url:"/register/find_name",
+            type: "POST",
+            dataType: "json",
+            data: {"name": name},
+            headers: {"X-CSRFToken": csrftoken},
+            success:function (data) {
+                if (data=="0"){
+                    layer.tips("该账号未注册", '#email', {
+                        time: 6000,
+                        tips: [2, "#ff8b2f"]
+                    });
+                    flag = false
+                }else {
+                    alert("账号输入正确");
+                    flag = true
+                }
+            },error:function () {
+                alert("查找账号，没有获取返回值")
+            }
+        })
+    });
+    //点击下一步进入到验证码发送页面，前提是输入正确,
+    $("#button").click(function () {
+        var code = $("#verify").val();
+        if (flag && $("#email").val()!=""){
+            $.ajax({
+                url:"/register/judge_code",
+                type: "POST",
+                dataType: "json",
+                data: {"code": code},
+                success:function (data) {
+                    if (data=="1"){
+                        //验证码输入正确后进入到短信发送页面
+                        location.href="/register/SMS?name="+$("#email").val()
+                    }else {
+                        alert("验证码输入错误！")
+                    }
+                },error:function () {
+                    alert("验证码，没有获取数据")
+                }
+            })
+        }
+    });
+    $('.imgcode').hover(function () {
+        layer.tips("看不清？点击更换", '.verify', {
+            time: 6000,
+            tips: [2, "#3c3c3c"]
+        })
+    }, function () {
+        layer.closeAll('tips');
+    }).click(function () {
+        $.post("{{ url_for("register.auth_code") }}",{},function(data){
+	        $('.imgcode').attr('src',"data:image/jpg;base64,"+data);
+        });
+    });
+</script>
+</body>
+</html>

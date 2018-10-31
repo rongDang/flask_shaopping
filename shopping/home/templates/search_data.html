@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>列表页</title>
+    <link rel="stylesheet" href="{{ url_for("home.static", filename="css/reset.css") }}" />
+    <link rel="stylesheet" href="{{ url_for("home.static", filename="css/pagination.css") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static", filename="css/top.css")}}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static", filename="css/lunbo.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static", filename="css/liebiao.css") }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/footer.css") }}"/>
+    <script src="{{ url_for("home.static",filename="js/jquery-1.8.3.min.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/public.js") }}"></script>
+</head>
+<!--此页面完成的是用户查询后返回的查询列表-->
+<body>
+<div class="dy1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+	<div class="dy2">
+        <ul class="dy3">
+            <li><a href="index">小白首页<br/>小白首页</a></li>
+            <li><a href="#" id="diyunapp">商城APP<br/>商城APP</a></li>
+        </ul>
+        <ul class="dy4">
+           {% if data.name %}
+               <!--用户登录后显示用户名，点击用户名则会进入到用户中心-->
+               <li><a href="#" onclick="location.href='vipcenter'" id="username">{{ data.nick_name }}<br/>{{ data.nick_name }}</a></li>
+               <li><a href="#" onclick="location.href='logout'" id="username">退出登录<br/>退出登录</a></li>
+           {% else %}
+               <li><a href="/register/login">登录<br/>登录</a></li>
+               <li><a href="/register/sign">注册<br/>注册</a></li>
+           {% endif %}
+        </ul>
+         <div class="dy9">
+         	<img src="{{ url_for("home.static", filename="img/二维码.png") }}"/>
+         </div>
+    </div>
+</div>
+<input id="kind" value="{{ data.kind }}" style="display: none">
+<!--logo加时间加搜索框-->
+<div class="dy10">
+	<div class="dy11">
+    	<img src="{{ url_for("home.static", filename="img/logo2.png") }}"/>
+    </div>
+    <div class="dy13">
+    	<embed src="../static/img/honehone_clock_wh.swf" style=" height:45px; width:120px"></embed>
+    </div>
+    <div class="dy12">
+    	<input type="text" id="shop_name" placeholder="搜索商品/店铺" value="{{ data.shop_name }}"  style="width:500px; height:36px; text-indent:12px; font-size:12px; color:#666; float:left" >
+        <input type="button" value="搜索" onclick="sou()" style=" cursor:pointer; width:70px; height:36px; float:right; text-align:center; background:#333;" class="shousuo">
+    </div>
+</div>
+<div class="qbspfl">
+	<div class="djfl">全部商品分类</div>
+    <div class="morelist">
+    	<a href="#" id="computer" onclick="location.href='kind?kind='+'1'">电脑</a>
+        <a href="#" id="panel" onclick="location.href='kind?kind='+'3'">平板</a>
+        <a href="#" id="hardware" onclick="location.href='kind?kind='+'5'">硬件</a>
+        <a href="#" id="phone" onclick="location.href='kind?kind='+'2'">手机</a>
+        <a href="#" id="parts" onclick="location.href='kind?kind='+'4'">配件</a>
+    </div>
+</div>
+<!--分类搜索-->
+<div class="zhxlxp">
+	<span style=" background:#000; color:#fff; margin-left:0;">排序方式</span>
+	<a href="#">综合</a>
+    <!--点击销量，如果没有被分类则显示所有的数据，如果被分类则显示分类后的商品销量-->
+    <a href="#" title="7天销量降序排列" id="sales">销量</a>
+    <a href="#" title="销售价格降序排列" >价格</a>
+</div>
+<!--商品列表-->
+<div class="shopliebiao">
+	<ul id="shop">
+        {% for shop in data.search_data[0:20] %}
+            <li>
+               <a href="#" onclick="location.href='details?id='+'{{ shop.1 }}'" class="wocici">
+                   <b><img src="{{ shop.7 }}"/></b>
+                   <span>{{ shop.4 }}元</span>
+                   <p>{{ shop.3 }}</p>
+               </a>
+               <em class="wocaca">
+                   <a href="#" onclick="location.href='store?store_name='+'{{ shop.2 }}'">{{ shop.2 }}</a>
+                   <a href="#" style=" border-right:hidden" id="add_cart" name="{{ shop.1 }}">加入购物车</a>
+               </em>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+<!--分页div-->
+<div>
+    <div class="pages">
+        <div id="Pagination"></div>
+        <div class="searchPage"></div>
+    </div>
+</div>
+<div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';"></div>
+
+<!--猜你喜欢,看的人数比较多的商品-->
+<div class="zhxlxp">
+    <span style=" background:#111; color:#fff; margin-left:0; padding-left:10px">热销商品</span>
+</div>
+<div class="tuijiansp">
+    <div class="shopliebiao">
+        <ul>
+            {% for foo in data.Sales_data %}
+                <li>
+                    <a href="#" onclick="location.href='details?id='+'{{ foo.1 }}'" class="wocici">
+                        <b><img src="{{ foo.7 }}"/></b>
+                        <span>{{ foo.4 }}元</span>
+                        <p>{{ foo.3 }}</p>
+                    </a>
+                    <em class="wocaca">
+                        <a href="#" onclick="location.href='store?store_name='+'{{ foo.2 }}'">{{ foo.2 }}</a>
+                        <a href="#" style=" border-right:hidden" id="add_cart" name="{{ foo.1 }}">加入购物车</a>
+                    </em>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<!--footer-->
+<div class="footer">
+	<div class="box" style=" width:1226px; margin:0 auto">
+        <ul class="lian">
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot.png") }}">新手指南</p>
+                <a href="#">账户注册</a>
+                <a href="#">购物流程</a>
+                <a href="#">网站地图</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot1.png") }}">支付方式</p>
+                <a href="#">货到付款</a>
+                <a href="#">在线支付</a>
+                <a href="#">礼品卡及账户余额</a>
+                <a href="#">其他支付方式</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot2.png") }}">配送说明</p>
+                <a href="#">配送运费</a>
+                <a href="#">配送时间</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot3.png") }}">售后服务</p>
+                <a href="#">退换货政策</a>
+                <a href="#">退换货办理流程</a>
+                <a href="#">退换货网上办理</a>
+                <a href="#">退款说明</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot4.png") }}">关于我们</p>
+                <a href="#">公司简介</a>
+                <a href="#">合作专区</a>
+                <a href="#">联系我们</a>
+                <a href="#">友情链接</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot5.png") }}">帮助中心</p>
+                <a href="#">找回密码</a>
+                <a href="#">邮件订阅</a>
+                <a href="#">产品册订阅</a>
+                <a href="#">隐私声明</a>
+            </li>
+        </ul>
+        <ul class="adv">
+        	<li><img src="{{ url_for("home.static", filename="img/adv.png") }}">正品保障</li>
+            <li><img src="{{ url_for("home.static", filename="img/adv1.png") }}">免运费</li>
+            <li><img src="{{ url_for("home.static", filename="img/adv2.png") }}">送货上门</li>
+            <li style="border-right:none;"><img src="{{ url_for("home.static", filename="img/adv3.png") }}">实物拍摄</li>
+        </ul>
+        <p class="ad">地址：*****************************&nbsp;&nbsp;&nbsp;邮箱：xiaobai.com.cn&nbsp;&nbsp;&nbsp;邮编:210008&nbsp;&nbsp;&nbsp;电话:4545-75614654</p>
+        <p class="ad">Copyright © 2010 - 2013, 版权所有 xiaobai.COM &nbsp;&nbsp;&nbsp;苏ICP备10088888号-1</p>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="{{ url_for("home.static", filename="js/jquery.pagination.js") }}"></script>
+<script type="text/javascript">
+    var csrftoken = $("meta[name=csrf-token]").attr("content");
+    $(document).ready(function() {
+        var count = {{ data.page }};
+        $("#Pagination").pagination(count,{
+            callback:pageselectCallback,
+            items_per_page:20 //每页显示的数据
+        });
+    });
+    //var sales = false;var price = false;
+    var kind = $("#kind").val();var shop_name = $("#shop_name").val();
+    //插件回调的方法中参数page为当前页数
+    function pageselectCallback(page) {
+        //点击分页时，如果没有进行销量排序则不会进入到下面if判断，如果点击了销量排序了则会按照排序的内容分页，价格也是一样
+        if("{{ data.sales }}"!="" && "{{ data.sales }}"!=kind){
+            //alert("搜索后的销量排序数据");
+            $.ajax({
+                url: "sales_sou",
+                type: "POST",
+                dataType: "json",
+                data: {page: page, shop_name: shop_name},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    //删除原来的数据
+                    $("#shop").empty();
+                    for (i = 0; i < data.length; i++) {
+                        $("<li>" +
+                            "<a href='details?id=" + data[i][1] + "' class='wocici'>" +
+                            "<b><img src='" + data[i][7] + "'/></b>" +
+                            "<span>" + data[i][4] + "元</span>" +
+                            "<p>" + data[i][3] + "</p>" +
+                            "</a>" +
+                            "<em class='wocaca'>" +
+                            "<a href='store?store_name=" + data[i][2] + "'>" + data[i][2] + "</a>" +
+                            "<a href='#' style='border-right:hidden' id='add_cart' name='" + data[i][1] + "'>加入购物车</a>" +
+                            "</em>" +
+                            "</li>").appendTo($("#shop"));
+                    }
+                }, error: function () {
+                    alert("异常")
+                }
+            });
+        }else if("{{ data.sales }}"==kind && kind!=""){
+            //alert("分类的数据销量排序"+kind);
+            $.ajax({
+                url: "sales_kind",
+                type: "POST",
+                dataType: "json",
+                data: {page: page, kind: kind},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    //删除原来的数据
+                    $("#shop").empty();
+                    for (i = 0; i < data.length; i++) {
+                        $("<li>" +
+                            "<a href='details?id=" + data[i][1] + "' class='wocici'>" +
+                            "<b><img src='" + data[i][7] + "'/></b>" +
+                            "<span>" + data[i][4] + "元</span>" +
+                            "<p>" + data[i][3] + "</p>" +
+                            "</a>" +
+                            "<em class='wocaca'>" +
+                            "<a href='store?store_name=" + data[i][2] + "'>" + data[i][2] + "</a>" +
+                            "<a href='#' style='border-right:hidden' id='add_cart' name='" + data[i][1] + "'>加入购物车</a>" +
+                            "</em>" +
+                            "</li>").appendTo($("#shop"));
+                    }
+                }, error: function () {
+                    alert("异常")
+                }
+            });
+        }
+        //在这里进行判断，如果没有点种类则表示是搜索结果
+        else if (kind == "") {
+            //查找搜索的结果
+            $.ajax({
+                url: "search",
+                type: "POST",
+                dataType: "json",
+                data: {page: page, shop_name: shop_name},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    //删除原来的数据
+                    $("#shop").empty();
+                    for (i = 0; i < data.length; i++) {
+                        $("<li>" +
+                            "<a href='details?id=" + data[i][1] + "' class='wocici'>" +
+                            "<b><img src='" + data[i][7] + "'/></b>" +
+                            "<span>" + data[i][4] + "元</span>" +
+                            "<p>" + data[i][3] + "</p>" +
+                            "</a>" +
+                            "<em class='wocaca'>" +
+                            "<a href='store?store_name=" + data[i][2] + "'>" + data[i][2] + "</a>" +
+                            "<a href='#' style='border-right:hidden' id='add_cart' name='" + data[i][1] + "'>加入购物车</a>" +
+                            "</em>" +
+                            "</li>").appendTo($("#shop"));
+                    }
+                }, error: function () {
+                    alert("异常")
+                }
+            });
+        } else {
+            //查找不同种类的结果
+            $.ajax({
+                url: "kind",
+                type: "POST",
+                dataType: "json",
+                data: {page: page, kind: kind},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    //删除原来的数据
+                    $("#shop").empty();
+                    for (i = 0; i < data.length; i++) {
+                        $("<li>" +
+                            "<a href='details?id=" + data[i][1] + "' class='wocici'>" +
+                            "<b><img src='" + data[i][7] + "'/></b>" +
+                            "<span>" + data[i][4] + "元</span>" +
+                            "<p>" + data[i][3] + "</p>" +
+                            "</a>" +
+                            "<em class='wocaca'>" +
+                            "<a href='store?store_name=" + data[i][2] + "'>" + data[i][2] + "</a>" +
+                            "<a href='#' style='border-right:hidden' id='add_cart' name='" + data[i][1] + "'>加入购物车</a>" +
+                            "</em>" +
+                            "</li>").appendTo($("#shop"));
+                    }
+                }, error: function () {
+                    alert("异常")
+                }
+            });
+        }
+    }
+    //点击销量，按搜索结果的销量降序展示
+    $("#sales").click(function () {
+        //如果kind为空，则表示是用户自己查询的，不是按照种类查询
+        if (kind=="" || kind=="None"){
+            location.href="search_sales?shop_name="+shop_name
+        }else {
+            location.href="search_sales?kind="+kind
+        }
+    });
+    function sou() {
+        var shop_name = $("#shop_name").val();
+        //把搜索的商品名传过去
+        location.href="search?shop_name="+shop_name;
+    }
+    //添加商品到购物车操作
+    $("#add_cart").live("click",function () {
+        //获取当前商品的商品id
+        var shop_id = $(this).attr("name");
+        if ("{{ data.name }}"!="None"){
+            var number = 1;
+            $.ajax({
+                url: "add_cart",
+                type: "POST",
+                dataType: "json",
+                data: {shop_id: shop_id,number:number},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    alert("添加成功！");
+                }
+            })
+        }else{
+            var flag = confirm("请登录");
+            if(flag){
+                location.href="/register/login"
+            }
+        }
+    })
+</script>
+</html>

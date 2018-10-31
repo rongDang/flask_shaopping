@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>账户安全</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static", filename="css/top.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static", filename="css/vipcenter.css") }}">
+    <script src="{{ url_for("home.static", filename="js/jquery-1.8.3.min.js") }}"></script>
+</head>
+
+<body>
+<!--头部-->
+<div class="dy1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <div class="dy2">
+        <ul class="dy3">
+            <li><a href="#" onclick="location.href='index?name={{ name }}'">小白首页<br/>小白首页</a></li>
+            <li><a href="#" id="diyunapp">商城APP<br/>商城APP</a></li>
+        </ul>
+        <ul class="dy4">
+            {% if data.name %}
+                <li><a href="#" onclick="location.href='vipcenter'">{{ data.nick_name }}<br/>{{ data.nick_name }}</a></li>
+                <li><a href="#" onclick="location.href='logout'" id="username">退出登录<br/>退出登录</a></li>
+            {% else %}
+                <li><a href="#">登录<br/>登录</a></li>
+                <li><a href="#">注册<br/>注册</a></li>
+            {% endif %}
+        </ul>
+        <div class="dy9">
+            <img src="{{ url_for("home.static", filename="img/phone.png") }}"/>
+        </div>
+    </div>
+</div>
+<!--个人中心首页 -->
+<div class="thetoubu">
+    <!--头部-->
+    <div class="thetoubu1">
+        <b><img src="{{ data.head_img }}"/></b>
+        <em style="color: #ff9352">{{ data.nick_name }}</em>
+        <em>欢迎来到会员中心</em>
+        <a href="#" onclick="location.href='amend_data'">修改资料</a>
+        <h5>账户安全</h5>
+        <strong>高</strong>
+        <span>
+            <p style=" width:80%"></p>
+        </span>
+        <a href="#">安全等级提升</a>
+    </div>
+    <!--详细列表-->
+    <div class="xiangxilbnm">
+        <!--left-->
+        <div class="xiangxilbnm">
+            <!--left-->
+            <div class="liefyu">
+                <h2>交易管理</h2>
+                <div class="conb">
+                    <a href="#" onclick="location.href='my_cart'">我的购物车</a>
+                    <a href="#" onclick="location.href='Goods_collection'">我的收藏</a>
+                    <a href="#">交易评价/晒单</a>
+                </div>
+                <h2>客户服务</h2>
+                <div class="conb">
+                    <a href="#">退款及退货</a>
+                    <a href="#">交易投诉</a>
+                    <a href="#">商品咨询</a>
+                </div>
+                <h2>资料管理</h2>
+                <div class="conb">
+                    <a href="#" onclick="location.href='amend_data'">账户信息</a>
+                    <a href="#">账户安全</a>
+                </div>
+            </div>
+            <!--right-->
+            <div class="zuirifip">
+                <!--账户安全-->
+                <div class="dfdaspjtk" style=" margin-top:0">
+                    <span style=" display:block; float:left; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#666">账户安全</span>
+                </div>
+                <div class="gzbangdingks">
+                    <div class="gzbdks">
+                        <div class="gzbdks1">
+                            <span>登录密码</span>
+                            <p style="color:#3CC">已设置</p>
+                        </div>
+                        <div class="gzbdks2">
+                            <p>安全性高的密码可以使账号更安全。建议您定期更换密码，且设置一个包含数字和字母，并长度超过6位以上的密码</p>
+                        </div>
+                        <div class="gzbdks3">
+                            <a href="#" style=" background:#f90" onclick="location.href='passwd'">修改密码</a>
+                        </div>
+                    </div>
+                    <div class="gzbdks">
+                        <div class="gzbdks1">
+                            <span>支付密码</span>
+                            {% if data.pay_pwd %}
+                                <p style="color:#3CC">已设置</p>
+                            {% else %}
+                                <p style="color:#ff0515">未设置</p>
+                            {% endif %}
+                        </div>
+                        <div class="gzbdks2">
+                            <p>建议您定期更换新的支付密码，提高安全性。支付密码最好不要设置为连续的数字</p>
+                        </div>
+                        <div class="gzbdks3">
+                            {% if data.pay_pwd %}
+                                <a href="#" style=" background:#f90" onclick="location.href='pay_pwd'">更换密码</a>
+                            {% else %}
+                                <a href="#" style=" background:#ff0515" onclick="location.href='pay_pwd'">设置密码</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="gzbdks">
+                        <div class="gzbdks1">
+                            <span>邮箱绑定</span>
+                            {% if data.email %}
+                                <p style="color:#3CC">已绑定</p>
+                            {% else %}
+                                <p style="color:#ff0515">未绑定</p>
+                            {% endif %}
+                        </div>
+                        <div class="gzbdks2">
+                            <p>进行邮箱验证后，可用于接收敏感操作的身份验证信息，以及订阅更优惠商品的促销邮件。</p>
+                        </div>
+                        <div class="gzbdks3">
+                            {% if data.email %}
+                                <a href="#" style=" background:#f90" onclick="location.href='amend_email'">更换绑定</a>
+                            {% else %}
+                                <a href="#" style=" background:#ff0515" onclick="location.href='amend_email'">立即绑定</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="gzbdks">
+                        <div class="gzbdks1">
+                            <span>手机绑定</span>
+                            <p style="color:#3CC">已绑定</p>
+                        </div>
+                        <div class="gzbdks2">
+                            <p>进行手机验证后，可用于接收敏感操作的身份验证信息，以及进行积分消费的验证确认，非常有助于保护您的账号和账户财产安全。</p>
+                        </div>
+                        <div class="gzbdks3">
+                            <a href="#" style=" background:#f90" onclick="location.href='amend_phone'">更换绑定</a>
+                        </div>
+                    </div>
+                </div>
+                <!--账户安全结束-->
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        $(".liefyu h2").click(function () {
+            $(this).next(".conb").slideToggle().siblings(".con").slideUp()
+        })
+    })
+</script>
+</html>	
+            
+            
+            

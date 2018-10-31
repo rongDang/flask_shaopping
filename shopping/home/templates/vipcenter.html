@@ -1,0 +1,292 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>个人中心</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/top.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/lunbo.css") }}">
+    <script src="{{ url_for("home.static",filename="js/jquery-1.8.3.min.js") }}"></script>
+    <script src="{{ url_for("home.static",filename="js/public.js") }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/vipcenter.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static",filename="css/footer.css") }}"/>
+</head>
+
+<body>
+<!--顶部菜单有改动与首页的不一样，请单独调用-->
+<div class="dy1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+	<div class="dy2">
+        <ul class="dy3">
+            <li><a href="#" onclick="location.href='index'">小白首页<br/>小白首页</a></li>
+            <li><a href="#" id="diyunapp">商城APP<br/>商城APP</a></li>
+        </ul>
+        <ul class="dy4">
+            {% if data.name %}
+                <li><a href="#">{{ data.nick_name }}<br/>{{ data.nick_name }}</a></li>
+                <li><a href="#" onclick="location.href='logout'" id="username">退出登录<br/>退出登录</a></li>
+            {% else %}
+                <li><a href="/register/login">登录<br/>登录</a></li>
+                <li><a href="/register/sign">注册<br/>注册</a></li>
+            {% endif %}
+        </ul>
+         <div class="dy9">
+         	<img src="{{ url_for("home.static",filename="img/phone.png") }}"/>
+         </div>
+    </div>
+</div>
+<!--个人中心首页-->
+<div class="thetoubu">
+	<!--头部-->
+	<div class="thetoubu1">
+        <!--这里是用户的头像，该头像也从数据库中获取-->
+    	<b><img src="{{ data.head_img }}"/></b>
+        <em style="color: #ff9352">{{ data.nick_name }}</em>
+        <em>欢迎来到会员中心</em>
+        <a href="#" onclick="location.href='amend_data'">修改资料</a>
+        <h5>账户安全</h5>
+        <strong>高</strong>
+        <span>
+            <p style=" width:80%"></p>
+        </span>
+        <a href="#" onclick="location.href='SAM'">安全等级提升</a>
+    </div>
+    <!--详细列表-->
+    <div class="xiangxilbnm">
+    	<!--left-->
+        <div class="liefyu">
+        	<h2>交易管理</h2>
+            <div class="conb">
+                <a href="#" onclick="location.href='my_cart'">我的购物车</a>
+                <a href="#" onclick="location.href='Goods_collection'">我的收藏</a>
+                <a href="#">交易评价/晒单</a>
+            </div>
+            <h2>客户服务</h2>
+            <div class="conb">
+                <a href="#">退款及退货</a>
+                <a href="#">交易投诉</a>
+                <a href="#">商品咨询</a>
+            </div>
+            <h2>资料管理</h2>
+            <div class="conb">
+                <a href="#" onclick="location.href='amend_data'">账户信息</a>
+                <a href="#" onclick="location.href='SAM'">账户安全</a>
+            </div>
+        </div>
+        <!--right-->
+        <div class="zuirifip">
+        <!--后期是不是要添加一个用户积分表，用户购买一件商品就会获得对应的积分-->
+        	<div class="zuiriftp1">
+            	<ul>
+                    <li>
+                    	<span>我的积分</span>
+                        <p>1000</p>
+                    </li>
+                    <li>
+                    	<span>我的优惠劵</span>
+                        <p><s>2</s>张</p>
+                    </li>
+                </ul>
+            </div>
+            <!--我的购物车-->
+        	<div class="dfdaspjtk">
+                <!--点击我的购物车，进入购物车-->
+            	<span style=" display:block; float:left; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#666">我的购物车</span>
+                <!--清空购物车中该用户对应购物车信息-->
+                <a href="#" style=" display:block; float:right; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#f90" >清空购物车</a>
+                <a href="#" style=" display:block; float:right; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#09f" onclick="location.href='my_cart'">查看购物车内所有商品</a>
+            </div>
+            <div class="wofrgwcjb">
+            	<ul>
+                    {% for foo in data.cart %}
+                        <li>
+                            <!--点击商品进入到商品详情页面-->
+                            <a href="#" onclick="location.href='details?id='+'{{ foo.1 }}'">
+                                <b>
+                                    <img src="{{ foo.7 }}"/>
+                                </b>
+                                <h5 style="font-size: 10px">{{ foo.3 }}</h5>
+                                <span>{{ foo.4*foo[-2] }}元({{ foo[-2] }})件</span>
+                            </a>
+                            <!--点击进入到店铺页面，会展示对应店铺的商品-->
+                            <a href="#" onclick="location.href='store?store_name='+'{{ foo.2 }}'" style=" width:200px; line-height:20px; font-size:12px; color:#666; display:block; text-align:center" class="qsbqmzb">{{ foo.2 }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        <!--购物车结束--> 
+        <!--我的商品收藏-->
+        	<div class="dfdaspjtk">
+            	<span style=" display:block; float:left; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#666">商品收藏</span>
+                <a href="#" style=" display:block; float:right; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#f90" id="del_all">清空收藏</a>
+                <a href="#" style=" display:block; float:right; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#09f" onclick="location.href='Goods_collection'">查看收藏的所有商品</a>
+            </div>
+            <div class="wofrgwcjb">
+            	<ul>
+                    {% for foo in data.collect_shop %}
+                        <li>
+                            <!--点击商品进入到商品详情页面-->
+                            <a href="#" onclick="location.href='details?id='+'{{ foo.1 }}'">
+                                <b>
+                                    <img src="{{ foo.7 }}"/>
+                                </b>
+                                <h5 style="font-size: 10px">{{ foo.3 }}</h5>
+                                <span>{{ foo.4 }}元</span>
+                            </a>
+                            <a href="#" onclick="location.href='store?store_name='+'{{ foo.2 }}'" style=" width:200px; line-height:20px; font-size:12px; color:#666; display:block; text-align:center" class="qsbqmzb">{{ foo.2 }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        <!--商品收藏结束-->
+        <!--我收藏的店铺-->
+        	<div class="dfdaspjtk" style=" background:rgba(0,66,255,0.1)">
+            	<span style=" display:block; float:left; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#666">店铺收藏</span>
+                <a href="#" style=" display:block; float:right; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#f90" id="del_store">清空店铺</a>
+                <a href="#" style=" display:block; float:right; font-size:14px; font-weight:bold; line-height:34px; padding-left:20px; padding-right:20px; color:#09f" onclick="location.href='store_cang'">查看收藏的所有店铺</a>
+            </div>
+            <div class="wotrfrgwcjb">
+            	<ul>
+                    {% for foo in data.collect_store %}
+                        <li>
+                            <a href="#" onclick="location.href='store?store_name='+'{{ foo.2 }}'">
+                                <img src="http://img.alicdn.com/imgextra/i4/2835461748/TB20HAwir9YBuNjy0FgXXcxcXXa_!!2835461748-0-beehive-scenes.jpg_360x360xzq90.jpg"/>
+                                <h5>{{ foo.2 }}</h5>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        <!--店铺收藏结束-->
+        </div>
+        <!--right结束-->
+    </div>
+    <!--详细列表结束-->
+</div>
+<!--个人中心结束-->
+<!--页脚-->
+<div class="footer">
+	<div class="box" style=" width:1226px; margin:0 auto">
+        <ul class="lian">
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot.png") }}">新手指南</p>
+                <a href="#">账户注册</a>
+                <a href="#">购物流程</a>
+                <a href="#">网站地图</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot1.png") }}">支付方式</p>
+                <a href="#">货到付款</a>
+                <a href="#">在线支付</a>
+                <a href="#">礼品卡及账户余额</a>
+                <a href="#">其他支付方式</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot2.png") }}">配送说明</p>
+                <a href="#">配送运费</a>
+                <a href="#">配送时间</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot3.png") }}">售后服务</p>
+                <a href="#">退换货政策</a>
+                <a href="#">退换货办理流程</a>
+                <a href="#">退换货网上办理</a>
+                <a href="#">退款说明</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot4.png") }}">关于我们</p>
+                <a href="#">公司简介</a>
+                <a href="#">合作专区</a>
+                <a href="#">联系我们</a>
+                <a href="#">友情链接</a>
+            </li>
+            <li>
+                <p><img src="{{ url_for("home.static", filename="img/fot5.png") }}">帮助中心</p>
+                <a href="#">找回密码</a>
+                <a href="#">邮件订阅</a>
+                <a href="#">产品册订阅</a>
+                <a href="#">隐私声明</a>
+            </li>
+        </ul>
+        <ul class="adv">
+        	<li><img src="{{ url_for("home.static", filename="img/adv.png") }}">正品保障</li>
+            <li><img src="{{ url_for("home.static", filename="img/adv1.png") }}">免运费</li>
+            <li><img src="{{ url_for("home.static", filename="img/adv2.png") }}">送货上门</li>
+            <li style="border-right:none;"><img src="{{ url_for("home.static", filename="img/adv3.png") }}">实物拍摄</li>
+        </ul>
+        <p class="ad">地址：*************************************** &nbsp;&nbsp;&nbsp;邮箱：xiaobai.com.cn &nbsp;&nbsp;&nbsp;邮编:210008 &nbsp;&nbsp;&nbsp;电话:4545-75614654</p>
+        <p class="ad">Copyright © 2010 - 2013, 版权所有 xiaobai.COM &nbsp;&nbsp;&nbsp;苏ICP备10088888号-1</p>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var csrftoken = $("meta[name=csrf-token]").attr("content");
+    $(function () {
+        $(".liefyu h2").click(function () {
+            $(this).next(".conb").slideToggle().siblings(".con").slideUp()
+            //next()获得匹配元素集合中每个元素紧邻的同胞元素。如果提供选择器，则取回匹配该选择器的下一个同胞元素。
+            //.slideToggle()slideToggle() 方法通过使用滑动效果（高度变化）来切换元素的可见状态。jQuery效果
+            // 如果被选元素是可见的，则隐藏这些元素，如果被选元素是隐藏的，则显示这些元素。
+            //.siblings(".con")获得匹配集合中每个元素的同胞,  .slideUp()通过使用滑动效果，隐藏被选元素，如果元素已显示出来的话。jQuery效果
+        });
+        //清空收藏操作
+        $("#del_all").click(function () {
+            var flag = confirm("确认清空所有商品收藏？");
+            if(flag){
+                $.ajax({
+                    url:"delete_collect_shop",
+                    type:"POST",
+                    dataType:"json",
+                    headers: {"X-CSRFToken": csrftoken},
+                    success:function (data) {
+                        location.href="vipcenter"
+                    },error:function () {
+                        alert("异常")
+                    }
+                })
+            }
+        });
+        $("#del_store").click(function () {
+            var flag = confirm("确认清空所有店铺收藏？");
+            if(flag){
+                $.ajax({
+                    url:"delete_collect_store",
+                    type:"POST",
+                    dataType:"json",
+                    headers: {"X-CSRFToken": csrftoken},
+                    success:function (data) {
+                        location.href="vipcenter"
+                    },error:function () {
+                        alert("异常")
+                    }
+                })
+            }
+        })
+    })
+</script>
+</html>
+                
+                            
+                    	
+                            
+                            
+                        
+                        
+                            
+                        
+                    
+                    
+                    
+                    
+                                
+                
+            
+
+
+        
+		
+		
+
+            
+		    
+                
+                

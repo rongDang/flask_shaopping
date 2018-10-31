@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>我的收藏</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static", filename="css/top.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("home.static", filename="css/vipcenter.css") }}">
+    <script src="{{ url_for("home.static", filename="js/jquery-1.8.3.min.js") }}"></script>
+    <script src="{{ url_for("home.static", filename="js/public.js") }}"></script>
+</head>
+
+<body>
+<!--顶部菜单有改动与首页的不一样，请单独调用-->
+<div class="dy1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+	<div class="dy2">
+        <ul class="dy3">
+            <li><a href="#" onclick="location.href='index'">小白首页<br/>小白首页</a></li>
+            <li><a href="#" id="diyunapp">商城APP<br/>商城APP</a></li>
+        </ul>
+        <ul class="dy4">
+            {% if data.name %}
+                <li><a href="vipcenter">{{ data.nick_name }}<br/>{{ data.nick_name }}</a></li>
+                <li><a href="#" onclick="location.href='logout'" id="username">退出登录<br/>退出登录</a></li>
+            {% else %}
+                <li><a href="/register/login">登录<br/>登录</a></li>
+                <li><a href="/register/sign">注册<br/>注册</a></li>
+            {% endif %}
+        </ul>
+         <div class="dy9">
+         	<img src="{{ url_for("home.static",filename="img/phone.png") }}"/>
+         </div>
+    </div>
+</div>
+<!--个人中心首页 -->
+<div class="thetoubu">
+	<!--头部-->
+	<div class="thetoubu1">
+    	<b><img src="{{ data.head_img }}"/></b>
+        <em style="color: #ff9352">{{ data.nick_name }}</em>
+        <em>欢迎来到会员中心</em>
+        <a href="#" onclick="location.href='amend_data'">修改资料</a>
+        <h5>账户安全</h5>
+        <strong>高</strong>
+        <span>
+            <p style=" width:80%"></p>
+        </span>
+        <a href="#" onclick="location.href='SAM'">安全等级提升</a>
+    </div>
+    <!--详细列表-->
+    <div class="xiangxilbnm">
+    	<!--left-->
+        <div class="liefyu">
+            <h2>交易管理</h2>
+            <div class="conb">
+                <a href="#" onclick="location.href='my_cart'">我的购物车</a>
+                <a href="#">我的收藏</a>
+                <a href="#">交易评价/晒单</a>
+            </div>
+            <h2>客户服务</h2>
+            <div class="conb">
+                <a href="#">退款及退货</a>
+                <a href="#">交易投诉</a>
+                <a href="#">商品咨询</a>
+            </div>
+            <h2>资料管理</h2>
+            <div class="conb">
+                <a href="#" onclick="location.href='amend_data'">账户信息</a>
+                <a href="#" onclick="location.href='SAM'">账户安全</a>
+            </div>
+        </div>
+        <!--right-->
+        <div class="zuirifip">
+        	<!--商品收藏和店铺收藏-->
+            <div class="locfre">
+            	<a href="#" class="zuliyesi">商品收藏</a>
+                <a href="#" onclick="location.href='my_collect_store'">店铺收藏</a>
+                <a href="#" style=" float:right" id="del_all">全部删除</a>
+            </div>
+            <!--收藏的商品列表-->
+            <div class="feizhoum">
+            	<ul>
+                    {% for foo in data.collect_shop %}
+                        <li>
+                            <img src="{{ foo.7 }}"/>
+                            <span>
+                                <a href="#" onclick="location.href='details?id='+'{{ foo.1 }}'">{{ foo.3 }}</a>
+                                <em>{{ foo.4 }}元</em>
+                                <a href="#" style="display:block; width:40px; height:20px; text-align:center; line-height:20px; font-size:12px; color:#fff; background:#09f; margin-top:12px" onclick="del({{ foo.1 }})">删除</a>
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!--收藏商品列表结束-->
+        </div>
+        <!--right结束-->
+    </div>
+    <!--详细列表结束-->
+</div>
+<!--个人中心结束-->
+</body>
+<script type="text/javascript">
+    var csrftoken = $("meta[name=csrf-token]").attr("content");
+    $(function () {
+        $(".liefyu h2").click(function () {
+            $(this).next(".conb").slideToggle().siblings(".con").slideUp()
+        });
+        $(".locfre a").click(function(){
+            $(this).addClass("zuliyesi").siblings().removeClass("zuliyesi")
+        });
+        $("#del_all").click(function () {
+            var flag = confirm("确认清空所有商品收藏？");
+            if(flag){
+                $.ajax({
+                    url:"delete_collect_shop",
+                    type:"POST",
+                    dataType:"json",
+                    headers: {"X-CSRFToken": csrftoken},
+                    success:function (data) {
+                        location.href="Goods_collection"
+                    },error:function () {
+                        alert("异常")
+                    }
+                })
+            }
+        });
+    });
+    function del(id) {
+        var flag = confirm("确认取消该商品收藏？");
+        if(flag){
+            $.ajax({
+                url: "del_shop",
+                type: "POST",
+                dataType: "json",
+                data:{shop_id:id},
+                headers: {"X-CSRFToken": csrftoken},
+                success: function (data) {
+                    location.href = "Goods_collection"
+                }, error: function () {
+                    alert("异常")
+                }
+            })
+        }
+    }
+</script>
+</html>    	
+                        
+                        
+                
+        
