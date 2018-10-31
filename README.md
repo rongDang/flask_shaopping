@@ -1,2 +1,2 @@
 # flask_shaopping
-和Django一样的一个项目，使用flask编写
+后面写的一个项目，和之前的Django-shopping类似，数据用的是一样的数据
